@@ -1,0 +1,333 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="carriers" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="correoestandar" translate="label" type="text" sortOrder="400" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Correo Estandar</label>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Method Name</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                    <label>Sort Order</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="contract" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Contrato</label>
+                </field>
+                <field id="sallowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Ship to Applicable Countries</label>
+                    <frontend_class>shipping-applicable-country</frontend_class>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="91" showInDefault="1" showInWebsite="1">
+                    <label>Ship to Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
+                        <field id="sallowspecific">1</field>
+                    </depends>
+                </field>
+                <field id="showmethod" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Show Method if Not Applicable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_class>shipping-skip-hide</frontend_class>
+                </field>
+                <field id="specificerrmsg" translate="label" type="textarea" sortOrder="81" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Displayed Error Message</label>
+                    <depends>
+                        <field id="showmethod">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="correosucursal" translate="label" type="text" sortOrder="401" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Correo Sucursal</label>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Method Name</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                    <label>Sort Order</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sallowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Ship to Applicable Countries</label>
+                    <frontend_class>shipping-applicable-country</frontend_class>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="91" showInDefault="1" showInWebsite="1">
+                    <label>Ship to Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
+                        <field id="sallowspecific">1</field>
+                    </depends>
+                </field>
+                <field id="showmethod" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Show Method if Not Applicable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_class>shipping-skip-hide</frontend_class>
+                </field>
+                <field id="specificerrmsg" translate="label" type="textarea" sortOrder="81" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Displayed Error Message</label>
+                    <depends>
+                        <field id="showmethod">1</field>
+                    </depends>
+                </field>
+                <field id="contract" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Contrato</label>
+                </field>
+            </group>
+
+            <group id="correourgente" translate="label" type="text" sortOrder="402" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Correo Urgente</label>
+                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Method Name</label>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                    <label>Sort Order</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Title</label>
+                </field>
+                <field id="sallowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Ship to Applicable Countries</label>
+                    <frontend_class>shipping-applicable-country</frontend_class>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="91" showInDefault="1" showInWebsite="1">
+                    <label>Ship to Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <depends>
+                        <field id="sallowspecific">1</field>
+                    </depends>
+                </field>
+                <field id="showmethod" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1">
+                    <label>Show Method if Not Applicable</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <frontend_class>shipping-skip-hide</frontend_class>
+                </field>
+                <field id="specificerrmsg" translate="label" type="textarea" sortOrder="81" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Displayed Error Message</label>
+                    <depends>
+                        <field id="showmethod">1</field>
+                    </depends>
+                </field>
+                <field id="contract" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Contrato</label>
+                </field>
+            </group>
+        </section>
+        <section id="shipping" translate="label" type="text" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="correo_configuration" translate="label" type="text" sortOrder="399" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Configuración General de correo</label>
+                <field id="production_mode" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Production mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="debug_mode" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Debug mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="username" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Usuario</label>
+                </field>
+                <field id="password" translate="label" type="obscure" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="client_number" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Número de cliente</label>
+                </field>
+                <field id="weight_unit" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Unidad de medida de origen</label>
+                    <source_model>Tiargsa\CorreoArgentino\Model\Source\WeightUnit</source_model>
+                    <comment><![CDATA[Es la unidad de medida base de la tienda.]]></comment>
+                </field>
+                <field id="product_fixed_price" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Precio fijo de productos</label>
+                    <comment><![CDATA[Dejar en blanco para que se calcule desde el precio del producto.]]></comment>
+                </field>
+                <field id="product_fixed_volume" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Volumen fijo de productos</label>
+                    <comment><![CDATA[Dejar en blanco para que se calcule desde el volumen del producto. <br><strong>Importante: Para calcularlo desde el producto es necesario completar el atributo "volumen" para cada producto del sitio.</strong>]]></comment>
+                </field>
+                <field id="tracking_url" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Url para seguimiento de envíos</label>
+                    <comment>La url ingresada no debe terminar con "/"</comment>
+                </field>
+                <group id="correo_origin_info" translate="label" type="text" sortOrder="402" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Datos del origen del envio</label>
+                    <field id="street" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Calle</label>
+                        <comment><![CDATA[Calle del origen del envio. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="number" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Altura</label>
+                        <comment><![CDATA[Altura de la calle del origen del envio. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="betweenStreets" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Entre calles</label>
+                        <comment><![CDATA[Entre calles de la calle del origen del envio. <strong>Opcional.</strong>]]></comment>
+                    </field>
+                    <field id="floor" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Piso</label>
+                        <comment><![CDATA[Piso de la calle del origen del envio. <strong>Opcional.</strong>]]></comment>
+                    </field>
+                    <field id="apartment" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Departamento</label>
+                        <comment><![CDATA[Departamento de la calle del origen del envio. <strong>Opcional.</strong>]]></comment>
+                    </field>
+                    <field id="postcode" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Codigo Postal</label>
+                        <comment><![CDATA[Código postal origen del envío. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="city" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Localidad</label>
+                        <comment><![CDATA[Localidad origen del envío. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="region" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Region</label>
+                        <comment><![CDATA[Región destino del envío codificado en ISO 3166-2:AR. <strong>Opcional</strong>]]></comment>
+                    </field>
+                    <field id="country" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Pais</label>
+                        <comment><![CDATA[País destino del envío. <strong>Opcional. Por defecto Argentina.</strong>]]></comment>
+                    </field>
+                </group>
+                <group id="correo_sender_info" translate="label" type="text" sortOrder="402" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Datos del remitente</label>
+                    <field id="fullname" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Nombre completo</label>
+                        <comment><![CDATA[Nombre o razón social del remitente del envío. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="email" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Email</label>
+                        <comment><![CDATA[Correo electrónico del remitente del envío. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="idType" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Documento tipo</label>
+                        <comment><![CDATA[Tipo de documento del remitente del envío. <strong>Obligatorio.</strong>]]></comment>
+                        <source_model>Tiargsa\CorreoArgentino\Model\Source\DocumentType</source_model>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="idNumber" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Numero de documento</label>
+                        <comment><![CDATA[Numero de documento del remitente del envío. <strong>Obligatorio.</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="phoneType" translate="label" type="select" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Tipo telefono</label>
+                        <comment><![CDATA[Tipo de telefono del remitente del envío. <strong>Obligatorio.</strong>]]></comment>
+                        <source_model>Tiargsa\CorreoArgentino\Model\Source\TelephoneType</source_model>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="phoneNumber" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Numero telefono</label>
+                        <comment><![CDATA[Numero de telefono del remitente del envío. <strong>Obligatorio</strong>]]></comment>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+                <group id="correo_rest_prod_urls" translate="label" type="text" sortOrder="402" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>correo Urls Rest produccion</label>
+                    <field id="login" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Login</label>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="rates" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Cotizar un Envío</label>
+                        <comment>Devuelve la tarifa de un envio a partir de parametros como el destino, el peso, el volumen, el valor declarado del producto</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="createOrder" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Crear una nueva orden</label>
+                        <comment>Una órden de envío es un pedido de envío que se le hace a correo. De esta forma correo puede planificar la entrega sin tener la carga todavía en su poder</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="label" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Obtener una etiqueta de una orden</label>
+                        <comment>Devuelve una etiqueta en formato PDF, que puede ser de bulto o remito a partir del numero correo brindado en el alta</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="shippingByNumber" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Obtener un envío</label>
+                        <comment>Devuelve la información de un envío por Número correo.</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="provinces" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Listar todas las provincias</label>
+                        <comment>Lista las provinicas reconocidas según ISO-3166-2:AR (https://es.wikipedia.org/wiki/ISO_3166-2:AR).</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="locations" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Listar todas las sucursales</label>
+                        <comment>Lista todas las sucursales de correo.</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+                <group id="correo_rest_dev_urls" translate="label" type="text" sortOrder="403" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>correo Urls Rest desarrollo</label>
+                    <field id="login" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Login</label>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="rates" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Cotizar un Envío</label>
+                        <comment>Devuelve la tarifa de un envio a partir de parametros como el destino, el peso, el volumen, el valor declarado del producto</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="createOrder" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Crear una nueva orden</label>
+                        <comment>Una órden de envío es un pedido de envío que se le hace a correo. De esta forma correo puede planificar la entrega sin tener la carga todavía en su poder</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="label" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Obtener una etiqueta de una orden</label>
+                        <comment>Devuelve una etiqueta en formato PDF, que puede ser de bulto o remito a partir del numero correo brindado en el alta</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="shippingByNumber" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Obtener un envío</label>
+                        <comment>Devuelve la información de un envío por Número correo.</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="provinces" translate="label" type="text" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Listar todas las provincias</label>
+                        <comment>Lista las provinicas reconocidas según ISO-3166-2:AR (https://es.wikipedia.org/wiki/ISO_3166-2:AR).</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="locations" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Listar todas las sucursales</label>
+                        <comment>Lista todas las sucursales de correo.</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>

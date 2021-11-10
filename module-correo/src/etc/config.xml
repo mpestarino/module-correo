@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!--
+  ~ @author Drubu Team
+  ~ @copyright Copyright (c) 2021 Drubu
+  ~ @package Tiargsa_CorreoArgentino
+  -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <correoestandar>
+                <active>1</active>
+                <model>Tiargsa\CorreoArgentino\Model\Carrier\StandardDelivery</model>
+                <name>Envio a domicilio</name>
+                <use_fixed_price>0</use_fixed_price>
+                <price>0.00</price>
+                <sort_order>1</sort_order>
+                <title>correo</title>
+                <contract>400006709</contract>
+                <sallowspecific>0</sallowspecific>
+                <showmethod>1</showmethod>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <type>I</type>
+                <handling_type>F</handling_type>
+                <handling_fee>0.00</handling_fee>
+            </correoestandar>
+            <correosucursal>
+                <active>1</active>
+                <model>Tiargsa\CorreoArgentino\Model\Carrier\PickupDelivery</model>
+                <name>Retiro en sucursal</name>
+                <use_fixed_price>0</use_fixed_price>
+                <price>0.00</price>
+                <sort_order>2</sort_order>
+                <title>correo</title>
+                <contract>400006711</contract>
+                <sallowspecific>0</sallowspecific>
+                <showmethod>1</showmethod>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <type>I</type>
+                <handling_type>F</handling_type>
+                <handling_fee>0.00</handling_fee>
+            </correosucursal>
+            <correourgente>
+                <active>1</active>
+                <model>Tiargsa\CorreoArgentino\Model\Carrier\PriorityDelivery</model>
+                <name>Envio a domicilio (Urgente)</name>
+                <use_fixed_price>0</use_fixed_price>
+                <price>0.00</price>
+                <sort_order>3</sort_order>
+                <title>correo</title>
+                <contract>400006710</contract>
+                <sallowspecific>0</sallowspecific>
+                <showmethod>1</showmethod>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <type>I</type>
+                <handling_type>F</handling_type>
+                <handling_fee>0.00</handling_fee>
+            </correourgente>
+        </carriers>
+        <shipping>
+            <correo_configuration>
+                <production_mode>0</production_mode>
+                <debug_mode>1</debug_mode>
+                <client_number>CL0003750</client_number>
+                <tracking_url>https://usuarios.e-correo.com/#!/informacionEnvio</tracking_url>
+                <correo_rest_prod_urls>
+                    <login>https://api.correo.com/login</login>
+                    <rates>https://api.correo.com/v1/tarifas</rates>
+                    <createOrder>https://api.correo.com/v2/ordenes-de-envio</createOrder>
+                    <label>https://api.correo.com/v2/ordenes-de-envio/{numerocorreo}/etiquetas</label>
+                    <shippingByNumber>https://api.correo.com/v1/envios/{numerocorreo}</shippingByNumber>
+                    <provinces>https://api.correo.com/v1/regiones</provinces>
+                    <locations>https://api.correo.com/v2/sucursales?canal=B2C&#38;seHaceAtencionAlCliente=true</locations>
+                </correo_rest_prod_urls>
+                <correo_rest_dev_urls>
+                    <login>https://api.qa.correo.com/login</login>
+                    <rates>https://api.qa.correo.com/v1/tarifas</rates>
+                    <createOrder>https://api.qa.correo.com/v2/ordenes-de-envio</createOrder>
+                    <label>https://api.qa.correo.com/v2/ordenes-de-envio/{numerocorreo}/etiquetas</label>
+                    <shippingByNumber>https://api.qa.correo.com/v1/envios/{numerocorreo}</shippingByNumber>
+                    <provinces>https://api.qa.correo.com/v1/regiones</provinces>
+                    <locations>https://api.qa.correo.com/v2/sucursales?canal=B2C&#38;seHaceAtencionAlCliente=true</locations>
+                </correo_rest_dev_urls>
+            </correo_configuration>
+        </shipping>
+    </default>
+</config>

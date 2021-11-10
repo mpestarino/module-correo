@@ -1,0 +1,38 @@
+<!--
+  ~ @author Drubu Team
+  ~ @copyright Copyright (c) 2021 Drubu
+  ~ @package Tiargsa_CorreoArgentino
+  -->
+
+<div class="correosucursal-container" data-bind="visible: selectedMethod() == 'correosucursal_sucursal'">
+    <div class="correosucursal-province-section" data-bind="visible: showProvinceSection()">
+        <select id="correosucursal-province-list" data-bind="options: provinces(),
+                                            value: selectedProvince,
+                                            optionsValue: function(item){return item;},
+                                            optionsCaption: 'Seleccione una provincia',
+                                            event:{ change: provinceChange},
+                                            optionsText: function(item){return item;}">
+        </select>
+    </div>
+    <div class="correosucursal-city-section" data-bind="visible: showCitySection()">
+        <select id="correosucursal-city-list" data-bind="options: cities(),
+                                            value: selectedCity,
+                                            optionsValue: function(item){return item;},
+                                            optionsCaption: 'Seleccione una localidad',
+                                            event:{ change: cityChange},
+                                            optionsText: function(item){return item;}">
+        </select>
+    </div>
+    <div class="correosucursal-store-section" data-bind="visible: showStoreSection()">
+        <select id="correosucursal-store-list" data-bind="options: stores(),
+                                            value: selectedStore,
+                                            optionsValue: function(item){return item;},
+                                            optionsCaption: 'Seleccione una sucursal',
+                                            event:{ change: storeChange},
+                                            optionsText: function(item){return item;}">
+        </select>
+    </div>
+    <div id="correosucursal-errors">
+        <span data-bind="text: correoErrorMessage"></span>
+    </div>
+</div>
