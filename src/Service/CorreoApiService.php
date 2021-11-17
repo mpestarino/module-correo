@@ -31,12 +31,15 @@ class CorreoApiService
     }
 
     public function login(){
+
+        //cambiar el user y pass en el body y no en el header
         $username = $this->helper->getUsername();
         $password = $this->helper->getPassword();
         $response = $this->doRequest($this->helper->getLoginUrl(), [
-            'header' => [
-                'Authorization: Basic ' . base64_encode($username . ':' . $password),
-            ]
+            'body' => [
+                'user' => $username,
+                'password'=>$password
+            ],
         ]);
         if($response->getStatusCode() == 200){
             $this->token = '';
