@@ -214,133 +214,79 @@ class ShippingProcessor
             }
             else {
                 //Creo el pedido en correo
-                $contract = $this->correoHelper->getContractByType($carrierCode);
                 $params = array(
-                    "contrato" => $contract,
-                    "origen" => array(
-                        "postal" => array(
-                            "codigoPostal" => $this->correoHelper->getOrigPostcode(),
-                            "calle" => $this->correoHelper->getOrigStreet(),
-                            "numero" => $this->correoHelper->getOrigNumber(),
-                            "localidad" => $this->correoHelper->getOrigCity(),
-                            "region" => $this->correoHelper->getOrigRegion(),
-                            "pais" => $this->correoHelper->getOrigCountry(),
-                        )
-                    ),
-                    "destino" => "",
-                    "remitente" => array(
-                        "nombreCompleto" => $this->correoHelper->getSenderFullname(),
-                        "email" => $this->correoHelper->getSenderEmail(),
-                        "documentoTipo" => $this->correoHelper->getSenderIdType(),
-                        "documentoNumero" => $this->correoHelper->getSenderId(),
-                        "telefonos" => [
+                    "sellerId" => "",
+                    "trackingNumber"    => $order->getIncrementId(),
+                    "order" => array(
+                        "agencyId"  => "",
+                        "deliveryType"  => "",
+                        "parcels"   => [
                             array(
-                                "tipo" => intval($this->correoHelper->getSenderPhoneType()),
-                                "numero" => $this->correoHelper->getSenderPhoneNumber()
+                                "declaredValue" => floatval($packageWeight['amount']),
+                                "dimensions"    => array(
+                                    "depth" => "",
+                                    "height"    => "",
+                                    "width" => ""
+                                ),
+                                "productCategory"   => "",
+                                "productWeight" => $packageWeight['weight']
                             )
-                        ]
-                    ),
-                    "destinatario" => [
-                        array(
-                            "nombreCompleto" => $order->getShippingAddress()->getFirstname() . ' ' . $order->getShippingAddress()->getLastname(),
-                            "email" => $order->getCustomerEmail(),
-                            "documentoTipo" => "DNI",
-                            "documentoNumero" => $order->getShippingAddress()->getDni() ? $order->getShippingAddress()->getDni() : '',
-                            "telefonos" => [
-                                array(
-                                    "tipo" => 1,
-                                    "numero" => $order->getShippingAddress()->getCelular() ? $order->getShippingAddress()->getCelular() : $order->getShippingAddress()->getTelephone()
-                                )
-                            ]
+                        ],
+                        "shipmentClientId"  => "",
+                        "serviceType"   => "",
+                        "saleDate"  => "",
+                        "senderData"    => array(
+                            "address"   => array(
+                                "localidad" => $this->correoHelper->getOrigCity(),
+                                "region" => $this->correoHelper->getOrigRegion(),
+                                "pais" => $this->correoHelper->getOrigCountry(),
+                                "cityName"  => "",
+                                "department"    => "",
+                                "floor" => "",
+                                "state" => "",
+                                "streetName"    => $this->correoHelper->getOrigStreet(),
+                                "streetNumber"  => $this->correoHelper->getOrigNumber(),
+                                "zipCode"   => $this->correoHelper->getOrigPostcode()
+                            ),
+                            "areaCodeCellphone" => "54",
+                            "areaCodePhone" => "54",
+                            "businessName"  => $this->correoHelper->getSenderFullname(),
+                            "cellphoneNumber"   => $this->correoHelper->getSenderPhoneNumber(),
+                            "email" => $this->correoHelper->getSenderEmail(),
+                            "id"    => "",
+                            "observation"   => "",
+                            "phoneNumber"   => ""
                         ),
-                    ],
-                    //"productoAEntregar" => $packageWeight['names'],
-                    "bultos" => [
-                        array(
-                            "kilos" => $packageWeight['weight'],
-                            //"largoCm" => 10,
-                            //"altoCm" => 50,
-                            //"anchoCm" => 10,
-                            "volumenCm" => $packageWeight['volume'],
-                            "valorDeclaradoSinImpuestos" => floatval($packageWeight['amount']),
-                            //"valorDeclaradoConImpuestos" => 1452,
-                            "referencias" => [
-                                array(
-                                    "meta" => "idCliente",
-                                    "contenido" => $order->getIncrementId()
-                                ),
-                                array(
-                                    "meta" => "observaciones",
-                                    "contenido" => substr($packageWeight['names'],0,255)
-                                ),
-                            ]
+                        "shippingData"  => array(
+                            "address"   => "",
+                            "areaCodeCellphone" => "54",
+                            "areaCodePhone" => "54",
+                            "cellphoneNumber"   => $order->getShippingAddress()->getCelular() ? $order->getShippingAddress()->getCelular() : $order->getShippingAddress()->getTelephone(),
+                            "email" => $order->getCustomerEmail(),
+                            "name"  => $order->getShippingAddress()->getFirstname() . ' ' . $order->getShippingAddress()->getLastname(),
+                            "observation"   => "",
+                            "phoneNumber"   => $order->getShippingAddress()->getTelephone()
                         )
-                    ]
+                    ),
                 );
+
                 if (!empty($order->getCodigoSucursalcorreo())) {//es retiro en sucursal
-                    $params['destino'] = array(
-                        "sucursal" => array(
-                            "id" => $order->getCodigoSucursalcorreo(),
-                        )
-                    );
+                    $params['order']['agencyId'] = $order->getCodigoSucursalcorreo();
+                    $params['order']['deliveryType'] = "agency";
                 }
                 else {
-                    $params['destino'] = array(
+                    $params['order']['deliveryType'] = "homeDelivery";
+                    $params['order']["shippingData"]["address"] = array(
                         "postal" => array(
-                            "codigoPostal" => $order->getShippingAddress()->getPostCode(),
-                            "calle" => $order->getShippingAddress()->getStreetLine(1) . ' ' . $order->getShippingAddress()->getStreetLine(2),
-                            "numero" => $order->getShippingAddress()->getAltura() ? $order->getShippingAddress()->getAltura() : '',
-                            "localidad" => $order->getShippingAddress()->getCity(),
-                            "region" => $order->getShippingAddress()->getRegion(),
-                            "pais" => "Argentina",
-                            "componentesDeDireccion" => []
+                            "zipCode" => $order->getShippingAddress()->getPostCode(),
+                            "streetName" => $order->getShippingAddress()->getStreetLine(1) . ' ' . $order->getShippingAddress()->getStreetLine(2),
+                            "streetNumber" => $order->getShippingAddress()->getAltura() ? $order->getShippingAddress()->getAltura() : '',
+                            "cityName" => $order->getShippingAddress()->getCity(),
+                            "department" => $order->getShippingAddress()->getDepartamento(),
+                            "floor" => $order->getShippingAddress()->getPiso(),
+                            "state" => ""
                         )
                     );
-                    if($order->getShippingAddress()->getPiso() != 0){
-                        $params['destino']['postal']['componentesDeDireccion'][] = array(
-                            "meta" => "piso",
-                            "contenido" => $order->getShippingAddress()->getPiso()
-                        );
-                    }
-                    if($order->getShippingAddress()->getDepartamento() != ''){
-                        $params['destino']['postal']['componentesDeDireccion'][] = array(
-                            "meta" => "departamento",
-                            "contenido" => $order->getShippingAddress()->getDepartamento()
-                        );
-                    }
-
-                    if(!empty($order->getShippingAddress()->getObservaciones())){
-                        $params['bultos'][0]['referencias'][1]['contenido'] = substr($order->getShippingAddress()->getObservaciones() . ' ' .$params['bultos'][0]['referencias'][1]['contenido'],0,255);
-                    }
-                }
-                $componentesDeDireccion = array();
-                $pisoOrigenEnvio = $this->correoHelper->getOrigFloor();
-                $departamentoOrigenEnvio = $this->correoHelper->getOrigApartment();
-                $entreCallesOrigenEnvio = $this->correoHelper->getOrigBetweenStreets();
-
-                if (!empty($pisoOrigenEnvio)) {
-                    $componentesDeDireccion[] = array(
-                        "meta" => "piso",
-                        "contenido" => $pisoOrigenEnvio
-                    );
-                }
-
-                if (!empty($departamentoOrigenEnvio)) {
-                    $componentesDeDireccion[] = array(
-                        "meta" => "departamento",
-                        "contenido" => $departamentoOrigenEnvio
-                    );
-                }
-
-                if (!empty($entreCallesOrigenEnvio)) {
-                    $componentesDeDireccion[] = array(
-                        "meta" => "entreCalle",
-                        "contenido" => $entreCallesOrigenEnvio
-                    );
-                }
-
-                if (!empty($componentesDeDireccion)) {
-                    $params['origen']['postal']['componentesDeDireccion'] = $componentesDeDireccion;
                 }
 
                 $response = $this->correoApiService->createOrder(new DataObject($params));
