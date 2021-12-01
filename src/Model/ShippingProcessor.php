@@ -7,8 +7,8 @@
 
 namespace Tiargsa\CorreoArgentino\Model;
 
-
-use Tiargsa\CorreoArgentino\Service\correoApiService;
+use Tiargsa\CorreoArgentino\Helper\Data;
+use Tiargsa\CorreoArgentino\Service\CorreoApiService;
 use Magento\Framework\DataObject;
 use Magento\Sales\Api\ShipOrderInterfaceFactory;
 use Magento\Shipping\Model\Shipping\LabelGenerator;
@@ -17,12 +17,12 @@ use Magento\Shipping\Model\Shipping\LabelGeneratorFactory;
 class ShippingProcessor
 {
     /**
-     * @var \Tiargsa\CorreoArgentino\Helper\Data
+     * @var Data
      */
     private $correoHelper;
 
     /**
-     * @var correoApiService
+     * @var CorreoApiService
      */
     private $correoApiService;
 
@@ -52,15 +52,14 @@ class ShippingProcessor
     private $shipmentRepositoryFactory;
 
     public function __construct(
-        \Tiargsa\CorreoArgentino\Helper\Data $correoHelper,
-        correoApiService $correoApiService,
+        Data $correoHelper,
+        CorreoApiService $correoApiService,
         \Magento\Quote\Api\CartRepositoryInterface $cartRepository,
         ShipOrderInterfaceFactory $shipOrderFactory,
         \Magento\Sales\Api\Data\ShipmentTrackCreationInterfaceFactory $shipmentTrackCreationFactory,
         \Magento\Sales\Api\ShipmentRepositoryInterfaceFactory $shipmentRepositoryFactory,
         LabelGeneratorFactory $labelGeneratorFactory
-    )
-    {
+    ) {
         $this->correoHelper = $correoHelper;
         $this->correoApiService = $correoApiService;
         $this->cartRepository = $cartRepository;
@@ -77,56 +76,54 @@ class ShippingProcessor
      * @param string $store_id
      * @return DataObject
      */
-    public function getRate($items, $zip, $method, $store_id = ''){
+    public function getRate($items, $zip, $method, $store_id = '')
+    {
         $rate = new DataObject();
         $price = -1;
         $status = false;
         $packageWeight = $this->getPackageWeightByItems($items); //pesoTotal, valorDeclarado y volumen
-        if(true /*$this->correoHelper->getTipoCotizacion() == $this->correoHelper::COTIZACION_ONLINE*/) {
-            $params = array(
-                "cpDestino" => $zip,//CP de la sucursal, viene en la info
-                "contrato" => $this->correoHelper->getContractByType($method),//nro contrato, config,
-                "cliente" => $this->correoHelper->getClientNumber(),//Codigo cliente, config,
-                "sucursalOrigen" => $store_id,//Codigo sucursal
-                "bultos" => [
+        if (true /*$this->correoHelper->getTipoCotizacion() == $this->correoHelper::COTIZACION_ONLINE*/) {
+            $params = [
+                "agreement"=>"",
+                "deliveryType"=>"",
+                "parcels"=>[
                     [
-                        "valorDeclarado" => $packageWeight['amount'],//total de la compra
-                        "volumen" => $packageWeight['volume'],//volumen
-                        "kilos" => $packageWeight['weight']//peso
+                        "declaredValue"=>$packageWeight['weight'],
+                        "dimensions"=>[
+                            "depth"=> "10",//produndidad
+                            "height"=> "15",//altura
+                            "width"=> "20"//ancho
+                        ],
+                        "weight"=>$packageWeight['weight']
                     ]
-                ]
-            );
+                ],
+                "senderData"=>[
+                    "zipCode"=> $this->correoHelper->getOrigPostcode()
+                ],
+                "serviceType"=> "string",
+                "shippingData"=> [
+                    "zipCode"=> $zip
+                ],
+            ];
 
             $paramsObj = new DataObject();
             $paramsObj->setData($params);
             $ratesResult = $this->correoApiService->getRates($paramsObj);
-            if($this->correoHelper->isDebugEnable()){
+            if ($this->correoHelper->isDebugEnable()) {
                 $statusMsge = isset($ratesResult["tarifaConIva"]["total"]) ? 'successful' : 'with errors';
                 $logMessage = "Method: getRate for $method\n";
                 $logMessage .= "Status: $statusMsge\n";
                 $logMessage .= "Request: " . json_encode($params) . "\n";
                 $logMessage .= "Response: " . json_encode($ratesResult) . "\n";
-                \Tiargsa\CorreoArgentino\Helper\Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
+                Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
             }
-            if(isset($ratesResult["tarifaConIva"]["total"])){
-                $price = $ratesResult["tarifaConIva"]["total"];
+        }
+        foreach ($ratesResult['rates'] as $rates) {
+            if (isset($rates['totalPrice'])) {
+                $price = $rates['totalPrice'];
                 $status = true;
             }
         }
-//        elseif($this->correoHelper->getTipoCotizacion() == $this->correoHelper::COTIZACION_TABLA)
-//        {
-//
-//            /** @var $tarifa \Tiargsa\CorreoArgentino\Model\Tarifa */
-//            $tarifa = $this->_tarifaFactory->create();
-//
-//            $costoEnvio = $tarifa->cotizarEnvio(
-//                [
-//                    'cpSucursal'=> $store['cp'],
-//                    'peso'          => $bultosData['kilos'],
-//                    'tipo'          => \Tiargsa\CorreoArgentino\Model\Carrier\correoSucursal::CARRIER_CODE
-//                ]
-//            );
-//        }
 
         $rate->setPrice($price);
         $rate->setStatus($status);
@@ -134,16 +131,17 @@ class ShippingProcessor
         return $rate;
     }
 
-    public function getLabel($tracking){
+    public function getLabel($tracking)
+    {
         $label = null;
-        try{
+        try {
             $label = $this->correoApiService->getLabel($tracking);
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             $logMessage = "Method: getLabel\n";
             $logMessage .= "Status: with errors\n";
             $logMessage .= "Request: $tracking\n";
             $logMessage .= "Message: " . $e->getMessage() . "\n";
-            \Tiargsa\CorreoArgentino\Helper\Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
+            Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
         }
         return $label;
     }
@@ -152,30 +150,29 @@ class ShippingProcessor
      * @param \Magento\Sales\Model\Order $order
      * @return DataObject
      */
-    public function generatecorreoShipping($order){
+    public function generatecorreoShipping($order)
+    {
         $shipmentResult = new \Magento\Framework\DataObject;
         $shippingLabelContent = [];
         $shipmentResult->setStatus(false);
         try {
             $carrierCode = $order->getShippingMethod(true)->getCarrierCode();
             $packageWeight = $this->getPackageWeightByItems($order->getAllItems());
-            if($order->hasShipments()){
+            if ($order->hasShipments()) {
                 $productFixedVolume = $this->correoHelper->getProductFixedVolume();
                 $productFixedPrice = $this->correoHelper->getProductFixedPrice();
                 $valorTotal = $pesoTotal = 0;
                 $itemsArray = [];
-                foreach ($order->getAllItems() AS $orderItem)
-                {
+                foreach ($order->getAllItems() as $orderItem) {
                     if (!$orderItem->getQtyShipped() || $orderItem->getIsVirtual()) {
                         continue;
                     }
 
                     $qtyShipped = $orderItem->getQtyShipped();
 
-                    if($productFixedPrice == '') {
+                    if ($productFixedPrice == '') {
                         $productPrice = $orderItem->getPrice();
-                    }
-                    else{
+                    } else {
                         $productPrice = $productFixedPrice;
                     }
 
@@ -193,7 +190,7 @@ class ShippingProcessor
                     ];
                 }
 
-                if($this->correoHelper->getWeightUnit() == 'gramos'){
+                if ($this->correoHelper->getWeightUnit() == 'gramos') {
                     $pesoTotal = $pesoTotal / 1000;
                 }
 
@@ -202,62 +199,63 @@ class ShippingProcessor
                     'amount' => $valorTotal,
                     'weight' => $pesoTotal
                 ];
-                foreach ($order->getShipmentsCollection() as $shipment){
+                foreach ($order->getShipmentsCollection() as $shipment) {
                     $tracksCollection = $shipment->getTracksCollection();
-                    foreach ($tracksCollection as $track){
+                    foreach ($tracksCollection as $track) {
                         $shippingLabelContent[] = $this->getLabel($track->getTrackNumber());
                     }
                     $this->generatePackageWithLabel($shipment->getId(), $shippingLabelContent, $packageWeight);
                     $shipmentResult->setShipmentId($shipment->getId());
                 }
                 $shipmentResult->setStatus(true);
-            }
-            else {
+            } else {
                 //Creo el pedido en correo
-                $params = array(
-                    "sellerId" => "",
+                $params = [
+                    "sellerId" => $this->correoHelper->getClientNumber(),
                     "trackingNumber"    => $order->getIncrementId(),
-                    "order" => array(
+                    "order" => [
                         "agencyId"  => "",
                         "deliveryType"  => "",
                         "parcels"   => [
-                            array(
+                            [
                                 "declaredValue" => floatval($packageWeight['amount']),
-                                "dimensions"    => array(
-                                    "depth" => "",
-                                    "height"    => "",
-                                    "width" => ""
-                                ),
+                                "dimensions"    => [
+                                    "depth" => "100",
+                                    "height"    => "100",
+                                    "width" => "100"
+                                    //estos 3 campos se van a tener que consultar
+                                ],
                                 "productCategory"   => "",
-                                "productWeight" => $packageWeight['weight']
-                            )
+                                "productWeight" => '100'
+                            ]
                         ],
                         "shipmentClientId"  => "",
-                        "serviceType"   => "",
-                        "saleDate"  => "",
-                        "senderData"    => array(
-                            "address"   => array(
-                                "localidad" => $this->correoHelper->getOrigCity(),
-                                "region" => $this->correoHelper->getOrigRegion(),
-                                "pais" => $this->correoHelper->getOrigCountry(),
-                                "cityName"  => "",
-                                "department"    => "",
-                                "floor" => "",
-                                "state" => "",
+                        "serviceType"   => "CP",
+                        //CONSULTAR SERVICE TYPE
+                        "saleDate"  => $order->getCreatedAt(),
+                        "senderData"    => [
+                            "address"   => [
+                                "cityName" => $this->correoHelper->getOrigCity(),
+                                "department"    => $this->correoHelper->getOrigApartment(),
+                                "floor" => $this->correoHelper->getOrigFloor(),
+                                "state" => "A",
+                                //consultar state
                                 "streetName"    => $this->correoHelper->getOrigStreet(),
                                 "streetNumber"  => $this->correoHelper->getOrigNumber(),
                                 "zipCode"   => $this->correoHelper->getOrigPostcode()
-                            ),
+                            ],
                             "areaCodeCellphone" => "54",
                             "areaCodePhone" => "54",
                             "businessName"  => $this->correoHelper->getSenderFullname(),
                             "cellphoneNumber"   => $this->correoHelper->getSenderPhoneNumber(),
                             "email" => $this->correoHelper->getSenderEmail(),
                             "id"    => "",
-                            "observation"   => "",
+                            "observation"   => "Observacion de remitente",
+                            //consultar y/o agregar campo en la configuracion
                             "phoneNumber"   => ""
-                        ),
-                        "shippingData"  => array(
+                            //falta cambiar el campo tipo de numero a numero fijo
+                        ],
+                        "shippingData"  => [
                             "address"   => "",
                             "areaCodeCellphone" => "54",
                             "areaCodePhone" => "54",
@@ -266,27 +264,25 @@ class ShippingProcessor
                             "name"  => $order->getShippingAddress()->getFirstname() . ' ' . $order->getShippingAddress()->getLastname(),
                             "observation"   => "",
                             "phoneNumber"   => $order->getShippingAddress()->getTelephone()
-                        )
-                    ),
-                );
+                        ]
+                    ],
+                ];
 
                 if (!empty($order->getCodigoSucursalcorreo())) {//es retiro en sucursal
                     $params['order']['agencyId'] = $order->getCodigoSucursalcorreo();
                     $params['order']['deliveryType'] = "agency";
-                }
-                else {
+                } else {
                     $params['order']['deliveryType'] = "homeDelivery";
-                    $params['order']["shippingData"]["address"] = array(
-                        "postal" => array(
+                    $params['order']["shippingData"]["address"] = [
                             "zipCode" => $order->getShippingAddress()->getPostCode(),
                             "streetName" => $order->getShippingAddress()->getStreetLine(1) . ' ' . $order->getShippingAddress()->getStreetLine(2),
                             "streetNumber" => $order->getShippingAddress()->getAltura() ? $order->getShippingAddress()->getAltura() : '',
                             "cityName" => $order->getShippingAddress()->getCity(),
                             "department" => $order->getShippingAddress()->getDepartamento(),
                             "floor" => $order->getShippingAddress()->getPiso(),
-                            "state" => ""
-                        )
-                    );
+                            "state" => "A"
+                        //lo dejamos duro por lo mismo que arriba
+                    ];
                 }
 
                 $response = $this->correoApiService->createOrder(new DataObject($params));
@@ -298,7 +294,7 @@ class ShippingProcessor
                         $logMessage .= "Status: with errors\n";
                         $logMessage .= "Request: " . json_encode($params) . "\n";
                         $logMessage .= "Response: " . json_encode($response) . "\n";
-                        \Tiargsa\CorreoArgentino\Helper\Data::log($logMessage, 'correo_errores_rest_' . date('Y_m') . '.log');
+                        Data::log($logMessage, 'correo_errores_rest_' . date('Y_m') . '.log');
                     }
                     $shipmentResult->setMessage($response);
                     return $shipmentResult;
@@ -309,30 +305,26 @@ class ShippingProcessor
                         $logMessage .= "Status: successful\n";
                         $logMessage .= "Request: " . json_encode($params) . "\n";
                         $logMessage .= "Response: " . json_encode($response) . "\n";
-                        \Tiargsa\CorreoArgentino\Helper\Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
+                        Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
                     }
                 }
 
 
                 //Creo el shipment de magento
                 $tracks = [];
-                if (count($response['bultos']) > 0) {
-                    $carrierTitle = $this->correoHelper->getTitleByType($carrierCode);
-                    foreach ($response['bultos'] as $correoTrack) {
-                        $tracking = $correoTrack['numeroDeEnvio'];
-                        /**
-                         * @var \Magento\Sales\Api\Data\ShipmentTrackCreationInterface $shipmentTrackCreation
-                         */
-                        $shipmentTrackCreation = $this->shipmentTrackCreationFactory->create();
-                        $shipmentTrackCreation
-                            ->setCarrierCode($carrierCode)
-                            ->setTitle($carrierTitle)
-                            ->setTrackNumber($tracking);
+                $carrierTitle = $this->correoHelper->getTitleByType($carrierCode);
+                $tracking = $response['trackingNumber'];
+                /**
+                 * @var \Magento\Sales\Api\Data\ShipmentTrackCreationInterface $shipmentTrackCreation
+                 */
+                $shipmentTrackCreation = $this->shipmentTrackCreationFactory->create();
+                $shipmentTrackCreation
+                    ->setCarrierCode($carrierCode)
+                    ->setTitle($carrierTitle)
+                    ->setTrackNumber($tracking);
 
-                        $tracks[] = $shipmentTrackCreation;
-                        $shippingLabelContent[] = $this->getLabel($tracking);
-                    }
-                }
+                $tracks[] = $shipmentTrackCreation;
+                $shippingLabelContent[] = $this->getLabel($tracking);
 
                 /**
                  * @var \Magento\Sales\Model\ShipOrder $shipOrder
@@ -345,14 +337,14 @@ class ShippingProcessor
                 $shipmentResult->setShipmentId($shipmentId);
                 $shipmentResult->setStatus(true);
             }
-        }
-        catch (\Exception $e){
+        } catch (\Exception $e) {
             $shipmentResult->setMessage($e->getMessage());
         }
         return $shipmentResult;
     }
 
-    private function generatePackageWithLabel($shipmentId, $shippingLabelContent, $packageWeight){
+    private function generatePackageWithLabel($shipmentId, $shippingLabelContent, $packageWeight)
+    {
         //creo el shipping label
         /**
          * @var \Magento\Sales\Api\ShipmentRepositoryInterface $shipmentRepository
@@ -387,7 +379,8 @@ class ShippingProcessor
      * @param $items
      * @return array
      */
-    private function getPackageWeightByItems($items){
+    private function getPackageWeightByItems($items)
+    {
         $productFixedVolume = $this->correoHelper->getProductFixedVolume();
         $productFixedPrice = $this->correoHelper->getProductFixedPrice();
         $pesoTotal       = 0;
@@ -396,38 +389,35 @@ class ShippingProcessor
         $productsNamesArray = [];
         $itemsArray = [];
 
-        foreach($items as $_item)
-        {
-            if($_item->getProductType() != 'simple') {
+        foreach ($items as $_item) {
+            if ($_item->getProductType() != 'simple') {
                 continue;
             }
 
             $_producto = $_item->getProduct();
             $productsNamesArray[] = $_producto->getSku() . ' - ' . $_producto->getName();
 
-            if($_item->getParentItem())
+            if ($_item->getParentItem()) {
                 $_item = $_item->getParentItem();
+            }
 
-            if($_item instanceof \Magento\Sales\Model\Order\Item) {
-                if($productFixedVolume == '') {
+            if ($_item instanceof \Magento\Sales\Model\Order\Item) {
+                if ($productFixedVolume == '') {
                     $volumenTotal += (int)$_producto->getResource()
                             ->getAttributeRawValue($_producto->getId(), 'volumen', $_producto->getStoreId()) * $_item->getQtyOrdered();
-                }
-                else{
+                } else {
                     $volumenTotal += intval($productFixedVolume) * $_item->getQtyOrdered();
                 }
 
                 $pesoTotal += $_item->getQtyOrdered() * $_item->getWeight();
 
-                if($productFixedPrice == '') {
+                if ($productFixedPrice == '') {
                     if ($_producto->getCost()) {
                         $valorProductos += $_producto->getCost() * $_item->getQtyOrdered();
-                    }
-                    else {
+                    } else {
                         $valorProductos += $_item->getPrice() * $_item->getQtyOrdered();
                     }
-                }
-                else{
+                } else {
                     $valorProductos += intval($productFixedPrice) * $_item->getQtyOrdered();
                 }
 
@@ -440,43 +430,38 @@ class ShippingProcessor
                     'product_id' => $_item->getProductId(),
                     'order_item_id' => $_item->getId()
                 ];
-            }
-            else{
-                if($productFixedVolume == '') {
+            } else {
+                if ($productFixedVolume == '') {
                     $volumenTotal += (int)$_producto->getResource()
                             ->getAttributeRawValue($_producto->getId(), 'volumen', $_producto->getStoreId()) * $_item->getQty();
-                }
-                else{
+                } else {
                     $volumenTotal += intval($productFixedVolume) * $_item->getQty();
                 }
 
                 $pesoTotal += $_item->getQty() * $_item->getWeight();
 
-                if($productFixedPrice == '') {
+                if ($productFixedPrice == '') {
                     if ($_producto->getCost()) {
                         $valorProductos += $_producto->getCost() * $_item->getQty();
-                    }
-                    else {
+                    } else {
                         $valorProductos += $_item->getPrice() * $_item->getQty();
                     }
-                }
-                else{
+                } else {
                     $valorProductos += intval($productFixedPrice) * $_item->getQty();
                 }
             }
         }
 
-        if($this->correoHelper->getWeightUnit() == 'gramos'){
+        if ($this->correoHelper->getWeightUnit() == 'gramos') {
             $pesoTotal = $pesoTotal / 1000;
         }
 
-        return array(
+        return [
             'amount' => $valorProductos,
             'volume' => $volumenTotal,
             'weight' => $pesoTotal,
             'names' => implode(',', $productsNamesArray),
             'items' => $itemsArray
-        );
+        ];
     }
-
 }

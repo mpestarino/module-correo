@@ -63,15 +63,15 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             {
                 $fieldsetEstandar = $form->addFieldset(
                     "zona_{$_tarifa->getZonaId()}_estandar",
-                    ['legend' => __("{$_tarifa->getNombreZona()} - Correo Estandar"), 'class' => 'fieldset-wide']
+                    ['legend' => __("{$_tarifa->getNombreZona()} - correo Estandar"), 'class' => 'fieldset-wide']
                 );
                 $fieldsetUrgente  = $form->addFieldset(
                     "zona_{$_tarifa->getZonaId()}_urgente",
-                    ['legend' => __("{$_tarifa->getNombreZona()} - Correo Urgente"), 'class' => 'fieldset-wide']
+                    ['legend' => __("{$_tarifa->getNombreZona()} - correo Urgente"), 'class' => 'fieldset-wide']
                 );
                 $fieldsetSucursal = $form->addFieldset(
                     "zona_{$_tarifa->getZonaId()}_sucursal",
-                    ['legend' => __("{$_tarifa->getNombreZona()} - Correo Sucursal"), 'class' => 'fieldset-wide']
+                    ['legend' => __("{$_tarifa->getNombreZona()} - correo Sucursal"), 'class' => 'fieldset-wide']
                 );
             }
 

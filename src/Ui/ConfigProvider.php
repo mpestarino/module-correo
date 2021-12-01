@@ -12,12 +12,12 @@ use Magento\Checkout\Model\ConfigProviderInterface;
 class ConfigProvider implements ConfigProviderInterface
 {
     /**
-     * @var \Tiargsa\CorreoArgentino\Service\correoApiService
+     * @var \Tiargsa\CorreoArgentino\Service\CorreoApiService
      */
     private $apiService;
 
     public function __construct(
-        \Tiargsa\CorreoArgentino\Service\correoApiService $apiService
+        \Tiargsa\CorreoArgentino\Service\CorreoApiService $apiService
     )
     {
         $this->apiService = $apiService;

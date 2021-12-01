@@ -53,7 +53,7 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory
      * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
-     * @param \Tiargsa\CorreoArgentino\Service\correoApiService $correoApiService
+     * @param \Tiargsa\CorreoArgentino\Service\CorreoApiService $correoApiService
      * @param array $data
      */
     public function __construct(
