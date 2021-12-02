@@ -8,11 +8,19 @@
 namespace Tiargsa\CorreoArgentino\Model\Carrier;
 
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote\Address\RateRequest;
+use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
+use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
+use Magento\Shipping\Model\Rate\ResultFactory;
+use Psr\Log\LoggerInterface;
+use Tiargsa\CorreoArgentino\Helper\Data;
+use Tiargsa\CorreoArgentino\Model\ShippingProcessor;
+use Tiargsa\CorreoArgentino\Service\CorreoApiService;
 
 class PickupDelivery extends AbstractCarrier implements CarrierInterface
 {
@@ -28,17 +36,17 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
      */
     protected $_isFixed = true;
     /**
-     * @var \Magento\Shipping\Model\Rate\ResultFactory
+     * @var ResultFactory
      */
     protected $_rateResultFactory;
 
     /**
-     * @var \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory
+     * @var MethodFactory
      */
     protected $_rateMethodFactory;
 
     /**
-     * @var \Tiargsa\CorreoArgentino\Helper\Data
+     * @var Data
      */
     protected $correoHelper;
 
@@ -48,28 +56,37 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
     protected $checkoutSession;
 
     /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
-     * @param \Tiargsa\CorreoArgentino\Service\CorreoApiService $correoApiService
+     * @var ShippingProcessor
+     */
+    protected $shippingProcessor ;
+
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     * @param ErrorFactory $rateErrorFactory
+     * @param LoggerInterface $logger
+     * @param ResultFactory $rateResultFactory
+     * @param MethodFactory $rateMethodFactory
+     * @param Data $correoHelper
+     * @param Session $checkoutSession
+     * @param ShippingProcessor $shippingProcessor
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
-        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        \Tiargsa\CorreoArgentino\Helper\Data $correoHelper,
+        ScopeConfigInterface $scopeConfig,
+        ErrorFactory $rateErrorFactory,
+        LoggerInterface $logger,
+        ResultFactory $rateResultFactory,
+        MethodFactory $rateMethodFactory,
+        Data $correoHelper,
         Session $checkoutSession,
+        \Tiargsa\CorreoArgentino\Model\ShippingProcessor $shippingProcessor,
         array $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
         $this->correoHelper = $correoHelper;
         $this->checkoutSession = $checkoutSession;
+        $this->shippingProcessor = $shippingProcessor;
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
     /**
@@ -117,15 +134,14 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
     private function getShippingPrice(RateRequest $request)
     {
         $shippingPrice = false;
-        $this->checkoutSession->setFreeShipping($request->getFreeShipping());
-        if(!$request->getFreeShipping()){
-            if($this->checkoutSession->getCotizacioncorreoSucursal()) {
-                $shippingPrice = $this->checkoutSession->getCotizacioncorreoSucursal();
+        if(!$request->getFreeShipping()) {
+            $rate = $this->shippingProcessor->getRate($request->getAllItems(), $request->getDestPostcode(), \Tiargsa\CorreoArgentino\Model\Carrier\PickupDelivery::CARRIER_CODE);
+            if($rate->getStatus()){
+                $shippingPrice = $rate->getPrice();
             }
-            else{
-                $shippingPrice = 0;
+            if(!is_bool($shippingPrice)) {
+                $shippingPrice = $this->getFinalPriceWithHandlingFee($shippingPrice);
             }
-            $shippingPrice = $this->getFinalPriceWithHandlingFee($shippingPrice);
         }
         else{
             $shippingPrice = 0;

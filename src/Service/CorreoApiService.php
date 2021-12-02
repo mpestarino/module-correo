@@ -68,6 +68,7 @@ class CorreoApiService
      */
     public function getProvinces()
     {
+        $this->logger->info('provincias');
         return $this->getDataFromResponse($this->doRequest($this->helper->getProvincesUrl()));
     }
 
@@ -76,6 +77,7 @@ class CorreoApiService
      */
     public function getLocations()
     {
+        //llama a las sucursales
         return $this->getDataFromResponse($this->doRequest($this->helper->getLocationUrl()));
     }
 

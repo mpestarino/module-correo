@@ -81,6 +81,7 @@ class ShippingProcessor
         $rate = new DataObject();
         $price = -1;
         $status = false;
+        $deliverMethod = $this->getDescriptionByMethod($method);
         $packageWeight = $this->getPackageWeightByItems($items); //pesoTotal, valorDeclarado y volumen
         if (true /*$this->correoHelper->getTipoCotizacion() == $this->correoHelper::COTIZACION_ONLINE*/) {
             $params = [
@@ -118,8 +119,9 @@ class ShippingProcessor
                 Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
             }
         }
+
         foreach ($ratesResult['rates'] as $rates) {
-            if (isset($rates['totalPrice'])) {
+            if ($rates['description'] == $deliverMethod) {
                 $price = $rates['totalPrice'];
                 $status = true;
             }
@@ -129,6 +131,24 @@ class ShippingProcessor
         $rate->setStatus($status);
 
         return $rate;
+    }
+
+    public function getDescriptionByMethod($method)
+    {
+
+        if ($method == "correoestandar") {
+            return "Envío a domicilio";
+        }
+
+        if ($method == "correourgente") {
+            return "Envío a domicilio prioritario";
+        }
+
+        if ($method == "correosucursal") {
+            return "Envio a sucursal de CA";
+        }
+
+        return "";
     }
 
     public function getLabel($tracking)
