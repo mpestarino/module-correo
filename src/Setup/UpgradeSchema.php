@@ -29,12 +29,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
     private function upgradeTo200(SchemaSetupInterface $setup){
         $tables2delete = [
             'ids_CorreoArgentino_guia_generada',
-            'ids_CorreoArgentino_provincia',
             'ids_CorreoArgentino_codigo_postal',
             'ids_CorreoArgentino_sucursal',
             'Tiargsa_CorreoArgentino_sucursal',
             'Tiargsa_CorreoArgentino_codigo_postal',
-            'Tiargsa_CorreoArgentino_provincia',
             'Tiargsa_CorreoArgentino_guia_generada'
         ];
 

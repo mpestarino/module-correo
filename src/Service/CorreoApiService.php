@@ -68,7 +68,7 @@ class CorreoApiService
      */
     public function getProvinces()
     {
-        $this->logger->info('provincias');
+        //$this->logger->info('provincias');
         return $this->getDataFromResponse($this->doRequest($this->helper->getProvincesUrl()));
     }
 
@@ -78,7 +78,18 @@ class CorreoApiService
     public function getLocations()
     {
         //llama a las sucursales
-        return $this->getDataFromResponse($this->doRequest($this->helper->getLocationUrl()));
+        if (empty($this->token)) {
+            $this->login();
+        }
+        return $this->getDataFromResponse($this->doRequest(
+            $this->helper->getLocationUrl(),
+            [
+                'header' => [
+                    'Authorization: Bearer ' . $this->token
+                ]
+            ],
+            Request::HTTP_METHOD_GET
+        ));
     }
 
     /**
@@ -127,14 +138,14 @@ class CorreoApiService
      */
     public function getLabel($tracking)
     {
-        $labelUrl = str_replace('{numerocorreo}', $tracking, $this->helper->getLabelUrl());
+        $labelUrl = str_replace('{numerocorreo}', $this->helper->getLabelUrl(), $tracking );
         if (empty($this->token)) {
             $this->login();
         }
         return $this->getDataFromResponse($this->doRequest(
             $labelUrl,
             [
-            'header' => ['x-authorization-token: ' . $this->token]
+            'header' => ['Bearer: ' . $this->token]
             ],
             Request::HTTP_METHOD_GET,
             false

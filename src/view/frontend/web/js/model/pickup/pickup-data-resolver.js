@@ -6,7 +6,7 @@ define([
     'use strict';
 
     return {
-        getProvinces: function () {
+        getLocations: function () {
 
         }
     }

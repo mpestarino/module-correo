@@ -127,35 +127,7 @@
                 </div>
             </div>
         <?php endif; ?>
-        <div class="field city required">
-            <label class="label" for="city"><span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('city') ?></span></label>
-            <div class="control">
-                <input type="text"
-                       name="city"
-                       value="<?= $block->escapeHtmlAttr($block->getAddress()->getCity()) ?>"
-                       title="<?= $block->escapeHtmlAttr(__('City')) ?>"
-                       class="input-text <?= $block->escapeHtmlAttr($this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('city')) ?>"
-                       id="city">
-            </div>
-        </div>
-        <div class="field region required">
-            <label class="label" for="region_id">
-                <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?></span>
-            </label>
-            <div class="control">
-                <select id="region_id" name="region_id"
-                        title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
-                        class="validate-select region_id" <?= /* @noEscape */ !$block->getConfig('general/region/display_all') ? ' disabled="disabled"' : '' ?>>
-                    <option value=""><?= $block->escapeHtml(__('Please select a region, state or province.')) ?></option>
-                </select>
-                <input type="text"
-                       id="region"
-                       name="region"
-                       value="<?= $block->escapeHtmlAttr($block->getRegion()) ?>"
-                       title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
-                       class="input-text validate-not-number-first <?= $block->escapeHtmlAttr($this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region')) ?>"<?= !$block->getConfig('general/region/display_all') ? ' disabled="disabled"' : '' ?>/>
-            </div>
-        </div>
+
         <div class="field zip required">
             <label class="label" for="zip">
                 <span><?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('postcode') ?></span>
