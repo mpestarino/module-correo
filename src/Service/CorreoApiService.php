@@ -1,12 +1,13 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
 namespace Tiargsa\CorreoArgentino\Service;
 
+use Laminas\Http\Request as RequestAlias;
 use Tiargsa\CorreoArgentino\Helper\Data as correoHelper;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\DataObject;
@@ -40,7 +41,6 @@ class CorreoApiService
 
     public function login()
     {
-        //cambiar el user y pass en el body y no en el header
         $username = $this->helper->getUsername();
         $password = $this->helper->getPassword();
         $response = $this->doRequest($this->helper->getLoginUrl(), [
@@ -66,10 +66,22 @@ class CorreoApiService
     /**
      * @return DataObject
      */
-    public function getProvinces()
+    public function getCancel($tracking)
     {
-        //$this->logger->info('provincias');
-        return $this->getDataFromResponse($this->doRequest($this->helper->getProvincesUrl()));
+        if (empty($this->token)) {
+            $this->login();
+        }
+
+        $cancelUrl = $this->helper->getCancelUrl(). $tracking . "/cancel";
+        return $this->getDataFromResponse($this->doRequest(
+            $cancelUrl,
+            [
+                'header' => [
+                    'Authorization: Bearer ' . $this->token
+                ]
+            ],
+            RequestAlias::METHOD_PATCH
+        ));
     }
 
     /**
@@ -77,18 +89,18 @@ class CorreoApiService
      */
     public function getLocations()
     {
-        //llama a las sucursales
+        $locationUrl = $this->helper->getLocationUrl();
+
         if (empty($this->token)) {
             $this->login();
         }
         return $this->getDataFromResponse($this->doRequest(
-            $this->helper->getLocationUrl(),
+            $locationUrl,
             [
                 'header' => [
                     'Authorization: Bearer ' . $this->token
                 ]
-            ],
-            Request::HTTP_METHOD_GET
+            ]
         ));
     }
 
@@ -136,19 +148,21 @@ class CorreoApiService
      * @param string $tracking
      * @return DataObject
      */
-    public function getLabel($tracking)
+    public function getLabel(string $tracking)
     {
-        $labelUrl = str_replace('{numerocorreo}', $this->helper->getLabelUrl(), $tracking );
+        $labelUrl = $this->helper->getLabelUrl(). "/" . $tracking;
+
         if (empty($this->token)) {
             $this->login();
         }
+
         return $this->getDataFromResponse($this->doRequest(
             $labelUrl,
             [
-            'header' => ['Bearer: ' . $this->token]
-            ],
-            Request::HTTP_METHOD_GET,
-            false
+                'header' => [
+                    'Authorization: Bearer ' . $this->token
+                ]
+            ]
         ));
     }
 

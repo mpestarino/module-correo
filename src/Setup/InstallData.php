@@ -7,6 +7,7 @@
 
 namespace Tiargsa\CorreoArgentino\Setup;
 
+use Magento\Catalog\Model\Product;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Customer\Setup\CustomerSetupFactory;
@@ -56,8 +57,7 @@ class InstallData implements InstallDataInterface
         CustomerSetupFactory $customerSetupFactory,
         AttributeSetFactory $attributeSetFactory,
         AttributeRepositoryInterface $attributeRepositoryInterface
-    )
-    {
+    ) {
         $this->eavSetupFactory              = $eavSetupFactory;
         $this->customerSetupFactory         = $customerSetupFactory;
         $this->attributeSetFactory          = $attributeSetFactory;
@@ -76,9 +76,9 @@ class InstallData implements InstallDataInterface
         $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
 
         /**Creacion del atributo volumen si no existe*/
-        if(!$eavSetup->getAttributeId(\Magento\Catalog\Model\Product::ENTITY, 'volumen')) {
+        if (!$eavSetup->getAttributeId(Product::ENTITY, 'volumen')) {
             $eavSetup->addAttribute(
-                \Magento\Catalog\Model\Product::ENTITY,
+                Product::ENTITY,
                 'volumen',
                 [
                     'frontend' => '',
@@ -110,7 +110,8 @@ class InstallData implements InstallDataInterface
         );
         $attributeCustomerAddressSetId      = $customerAddressEntity->getDefaultAttributeSetId();
         $attributeCustomerAddressSet        = $this->attributeSetFactory->create();
-        $attributeCustomerAddressGroupId    = $attributeCustomerAddressSet->getDefaultGroupId($attributeCustomerAddressSetId);
+        $attributeCustomerAddressGroupId    = $attributeCustomerAddressSet
+            ->getDefaultGroupId($attributeCustomerAddressSetId);
 
         $infoIdsAndreniZona =
             [
@@ -120,9 +121,9 @@ class InstallData implements InstallDataInterface
             ];
 
         $setup->getConnection()
-            ->insertArray($setup->getTable('Tiargsa_CorreoArgentino_zona'),['nombre'], $infoIdsAndreniZona);
+            ->insertArray($setup->getTable('Tiargsa_CorreoArgentino_zona'), ['nombre'], $infoIdsAndreniZona);
 
-        $infoIdsAndreniTarifa =
+        $infoIdsCorreoTarifa =
             [
                 [1000,130,120,200,1],
                 [1400,130,120,200,1],
@@ -145,8 +146,62 @@ class InstallData implements InstallDataInterface
             ];
 
         $setup->getConnection()
-            ->insertArray($setup->getTable('Tiargsa_CorreoArgentino_tarifa'),
-                [RateInterface::RANGE,RateInterface::STANDARD_VALUE,RateInterface::PICKUP_VALUE,RateInterface::PRIORITY_VALUE,RateInterface::ZONE_ID], $infoIdsAndreniTarifa);
+            ->insertArray(
+                $setup->getTable('Tiargsa_CorreoArgentino_tarifa'),
+                [
+                    RateInterface::RANGE,
+                    RateInterface::STANDARD_VALUE,
+                    RateInterface::PICKUP_VALUE,
+                    RateInterface::PRIORITY_VALUE,
+                    RateInterface::ZONE_ID
+                ],
+                $infoIdsCorreoTarifa
+            );
+
+        echo "Instalando Provicias Argentinas";
+        /**
+         * Fill table directory/country_region
+         * Fill table directory/country_region_name for en_US locale
+         */
+        $data = [
+            ['AR', 'B', 'Buenos Aires'],
+            ['AR', 'C', 'Capital Federal'],
+            ['AR', 'K', 'Catamarca'],
+            ['AR', 'H', 'Chaco'],
+            ['AR', 'U', 'Chubut'],
+            ['AR', 'X', 'Cordoba'],
+            ['AR', 'W', 'Corrientes'],
+            ['AR', 'E', 'Entre Rios'],
+            ['AR', 'P', 'Formosa'],
+            ['AR', 'Y', 'Jujuy'],
+            ['AR', 'L', 'La Pampa'],
+            ['AR', 'F', 'La Rioja'],
+            ['AR', 'M', 'Mendoza'],
+            ['AR', 'N', 'Misiones'],
+            ['AR', 'Q', 'Neuquen'],
+            ['AR', 'R', 'Rio Negro'],
+            ['AR', 'A', 'Salta'],
+            ['AR', 'J', 'San Juan'],
+            ['AR', 'D', 'San Luis'],
+            ['AR', 'Z', 'Santa Cruz'],
+            ['AR', 'S', 'Santa Fe'],
+            ['AR', 'G', 'Santiago del Estero'],
+            ['AR', 'V', 'Tierra del Fuego'],
+            ['AR', 'T', 'Tucuman'],
+        ];
+
+        foreach ($data as $row) {
+            $bind = ['country_id' => $row[0], 'code' => $row[1], 'default_name' => $row[2]];
+            $setup->getConnection()->insert($setup->getTable('directory_country_region'), $bind);
+            $regionId = $setup->getConnection()->lastInsertId($setup->getTable('directory_country_region'));
+
+            $bind = ['locale' => 'en_US', 'region_id' => $regionId, 'name' => $row[2]];
+            $setup->getConnection()->insert($setup->getTable('directory_country_region_name'), $bind);
+
+            $bind = ['locale' => 'es_AR', 'region_id' => $regionId, 'name' => $row[2]];
+            $setup->getConnection()->insert($setup->getTable('directory_country_region_name'), $bind);
+        }
+
 
         $setup->endSetup();
     }

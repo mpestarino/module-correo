@@ -1,13 +1,16 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
 namespace Tiargsa\CorreoArgentino\Observer\Customer\Account;
 
+use Magento\Checkout\Model\Session;
+use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Sales\Model\Order;
 
 class AddAddressToCustomer implements ObserverInterface
 {
@@ -17,7 +20,7 @@ class AddAddressToCustomer implements ObserverInterface
     protected $_customerSession;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $_checkoutSession;
 
@@ -28,15 +31,14 @@ class AddAddressToCustomer implements ObserverInterface
     /**
      * SalesOrderPlaceBefore constructor.
      * @param \Magento\Customer\Model\Session $customer
-     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param Session $checkoutSession
      */
     public function __construct(
         \Magento\Customer\Model\Session $customer,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Customer\Api\AddressRepositoryInterface $addressRepository,
-        \Magento\Sales\Model\Order $order
-    )
-    {
+        Session $checkoutSession,
+        AddressRepositoryInterface $addressRepository,
+        Order $order
+    ) {
         $this->_customerSession = $customer;
         $this->_checkoutSession = $checkoutSession;
         $this->addressRepository = $addressRepository;
@@ -52,8 +54,14 @@ class AddAddressToCustomer implements ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         $customer = $observer->getEvent()->getCustomer();
-        $order = $this->order->getCollection()->addFieldToFilter('customer_id',$customer->getId())->setOrder('created_at','DESC')->getFirstItem();
-        if(!empty($order->getId())) {
+        $order = $this->order
+            ->getCollection()
+            ->addFieldToFilter(
+                'customer_id',
+                $customer->getId()
+            )->setOrder('created_at', 'DESC')
+            ->getFirstItem();
+        if (!empty($order->getId())) {
             $shippingAddress = $order->getShippingAddress();
 
             //Guardo los atributos custom en la direccion del usuario
@@ -89,8 +97,6 @@ class AddAddressToCustomer implements ObserverInterface
                 $this->addressRepository->save($customerAddress);
             }
         }
-
-
         return $this;
     }
 }

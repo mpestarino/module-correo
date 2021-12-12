@@ -13,7 +13,7 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\OrderRepository;
 
-class PrintShippingLabel
+class CancelShipping
 {
     /**
      * @var UrlInterface
@@ -30,20 +30,18 @@ class PrintShippingLabel
     ) {
         $this->_backendUrl = $backendUrl;
     }
-
     public function beforeSetLayout(View $subject)
     {
         $order = $subject->getOrder();
         if (strpos($order->getShippingMethod(), 'correo') !== false && $this->hasTracking($order)) {
             $sendOrder = $this->_backendUrl->getUrl(
-                'correo/order/operations/operation/print_shipping_label',
+                'correo/order/operations/operation/cancel_shipping',
                 ['order_id' => $subject->getOrderId()]
             );
-
             $subject->addButton(
-                'printShippingLabel',
+                'cancelShipping',
                 [
-                    'label' => __('Imprimir guias correo'),
+                    'label' => __('Cancelar Envio Correo'),
                     'onclick' => "setLocation('" . $sendOrder . "')",
                     'class' => 'ship'
                 ]

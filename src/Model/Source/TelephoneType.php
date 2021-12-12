@@ -1,13 +1,15 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
 namespace Tiargsa\CorreoArgentino\Model\Source;
 
-class TelephoneType implements \Magento\Framework\Data\OptionSourceInterface
+use Magento\Framework\Data\OptionSourceInterface;
+
+class TelephoneType implements OptionSourceInterface
 {
     public function toOptionArray()
     {

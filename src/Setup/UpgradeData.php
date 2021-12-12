@@ -7,6 +7,7 @@
 
 namespace Tiargsa\CorreoArgentino\Setup;
 
+use Magento\Customer\Api\AddressMetadataInterface;
 use Magento\Customer\Setup\CustomerSetup;
 use Magento\Eav\Setup\EavSetup;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -52,14 +53,12 @@ class UpgradeData implements UpgradeDataInterface
 
         $eavSetup = $this->_eavSetupFactory->create(['setup' => $setup]);
 
-        if (version_compare($context->getVersion(), '1.0.2', '<'))
-        {
-            $eavSetup->updateAttribute(\Magento\Catalog\Model\Product::ENTITY,'volumen','apply_to','simple');
+        if (version_compare($context->getVersion(), '1.0.2', '<')) {
+            $eavSetup->updateAttribute(\Magento\Catalog\Model\Product::ENTITY, 'volumen', 'apply_to', 'simple');
         }
 
-        if (version_compare($context->getVersion(), '2.0.0', '<'))
-        {
-            $this->updateAddressAttributes($setup,$eavSetup);
+        if (version_compare($context->getVersion(), '2.0.0', '<')) {
+            $this->updateAddressAttributes($setup, $eavSetup);
         }
 
         $setup->endSetup();
@@ -69,7 +68,8 @@ class UpgradeData implements UpgradeDataInterface
      * @var ModuleDataSetupInterface $setup
      * @var EavSetup $eavSetup
      */
-    private function updateAddressAttributes($setup, $eavSetup){
+    private function updateAddressAttributes($setup, $eavSetup)
+    {
         /**
          * @var CustomerSetup $customerSetup
          */
@@ -161,25 +161,27 @@ class UpgradeData implements UpgradeDataInterface
                 'backend' => ''
             ]
         ];
-        foreach ($addressAttributes as $attributeCode => $attributeParams){
-            if($eavSetup->getAttributeId(\Magento\Customer\Api\AddressMetadataInterface::ENTITY_TYPE_ADDRESS, $attributeCode)){
-               $eavSetup->updateAttribute(
-                   \Magento\Customer\Api\AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
-                   $attributeCode,
-                   'required',
-                   false
-               );
-            }
-            else{
+        foreach ($addressAttributes as $attributeCode => $attributeParams) {
+            if ($eavSetup->getAttributeId(
+                AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
+                $attributeCode
+            )) {
+                $eavSetup->updateAttribute(
+                    AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
+                    $attributeCode,
+                    'required',
+                    false
+                );
+            } else {
                 $customerSetup->addAttribute(
-                    \Magento\Customer\Api\AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
+                    AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
                     $attributeCode,
                     $attributeParams
                 );
             }
             $attribute = $customerSetup->getEavConfig()
                 ->getAttribute(
-                    \Magento\Customer\Api\AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
+                    AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
                     $attributeCode
                 )
                 ->addData([

@@ -1,7 +1,7 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
@@ -23,6 +23,4 @@ class Index extends Action
 
         return $resultPage;
     }
-
-
 }

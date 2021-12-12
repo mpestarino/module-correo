@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Drubu Team
+ * @author Tiarg Team
  * @copyright Copyright (c) 2021 Drubu
  * @package Tiargsa_CorreoArgentino
  */
@@ -27,7 +27,8 @@ class InstallSchema implements InstallSchemaInterface
      * @description Creates correo_datos_guia, codigo_sucursal_CorreoArgentino, customer_dni columns
      * @param SchemaSetupInterface $installer
      */
-    private function createExtraColumns($installer){
+    private function createExtraColumns($installer)
+    {
         $salesOrderTable = $installer->getTable('sales_order');
         $salesShipmentTable = $installer->getTable('sales_shipment');
         $quoteTable = $installer->getTable('quote');
@@ -76,18 +77,21 @@ class InstallSchema implements InstallSchemaInterface
             ],
         ];
 
-        foreach ($columns as $column){
-            if(!$installer->getConnection()->tableColumnExists($column['tableName'],$column['columnName'])) {
-                $installer->getConnection()->addColumn($column['tableName'], $column['columnName'], $column['definition']);
+        foreach ($columns as $column) {
+            if (!$installer->getConnection()->tableColumnExists($column['tableName'], $column['columnName'])) {
+                $installer->getConnection()
+                    ->addColumn($column['tableName'], $column['columnName'], $column['definition']
+                    );
             }
         }
     }
 
     /**
-     * @description Creates shipping address columns for save attributes data in sales_order_address, quote_address table
+     * @description Create shipping address columns for save attributes data in sales_order_address, quote_address table
      * @param SchemaSetupInterface $installer
      */
-    private function createAddressColumn($installer){
+    private function createAddressColumn($installer)
+    {
         $attributes = [
             'dni' => [
                 'type' => Table::TYPE_INTEGER,
@@ -128,14 +132,13 @@ class InstallSchema implements InstallSchemaInterface
         ];
         $quoteAddress = $installer->getTable('quote_address');
         $salesOrderAddress = $installer->getTable('sales_order_address');
-        foreach ($attributes as $code => $value){
-            if(!$installer->getConnection()->tableColumnExists($salesOrderAddress,$code)){
+        foreach ($attributes as $code => $value) {
+            if (!$installer->getConnection()->tableColumnExists($salesOrderAddress, $code)) {
                 $installer->getConnection()->addColumn($salesOrderAddress, $code, $value);
             }
-            if(!$installer->getConnection()->tableColumnExists($quoteAddress,$code)){
+            if (!$installer->getConnection()->tableColumnExists($quoteAddress, $code)) {
                 $installer->getConnection()->addColumn($quoteAddress, $code, $value);
             }
         }
     }
-
 }

@@ -1,12 +1,18 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
 namespace Tiargsa\CorreoArgentino\Controller\Adminhtml\Order;
 
+use Magento\Framework\DataObject;
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Shipment;
+use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
+use Magento\Ui\Component\MassAction\Filter;
+use Magento\Ui\Component\MassAction\FilterFactory;
 use Tiargsa\CorreoArgentino\Model\ShippingProcessor;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -16,6 +22,7 @@ use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Sales\Api\OrderRepositoryInterface as SalesOrderRepositoryInterface;
 use Magento\Shipping\Model\Shipping\LabelGeneratorFactory;
 use Magento\Sales\Model\ResourceModel\Order\Shipment\CollectionFactory as ShipmentCollectionFactory;
+use Zend_Pdf_Exception;
 
 class Operations extends Action
 {
@@ -24,12 +31,12 @@ class Operations extends Action
     const PRINT_SHIPPING_LABEL = 'print_shipping_label';
 
     /**
-     * @var \Magento\Ui\Component\MassAction\FilterFactory
+     * @var FilterFactory
      */
     private $filterFactory;
 
     /**
-     * @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory
+     * @var CollectionFactory
      */
     private $collectionFactory;
 
@@ -55,22 +62,21 @@ class Operations extends Action
 
     /**
      * @param Context $context
-     * @param \Magento\Ui\Component\MassAction\FilterFactory $filterFactory
-     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory
+     * @param FilterFactory $filterFactory
+     * @param CollectionFactory $collectionFactory
      * @param ShippingProcessor $shippingProcessor
      * @param LabelGeneratorFactory $labelGeneratorFactory
      * @param FileFactory $fileFactory
      */
     public function __construct(
         Context $context,
-        \Magento\Ui\Component\MassAction\FilterFactory $filterFactory,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $collectionFactory,
+        FilterFactory $filterFactory,
+        CollectionFactory $collectionFactory,
         ShippingProcessor $shippingProcessor,
         LabelGeneratorFactory $labelGeneratorFactory,
         FileFactory $fileFactory,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
-    )
-    {
+        SalesOrderRepositoryInterface $orderRepository
+    ) {
         parent::__construct($context);
         $this->filterFactory = $filterFactory;
         $this->collectionFactory = $collectionFactory;
@@ -86,15 +92,16 @@ class Operations extends Action
     public function execute()
     {
         $operation = $this->getRequest()->getParam('operation');
-        $functionName = lcfirst(str_replace('_', '', ucwords($operation,'_')));
-        if($this->{$functionName}()){
+        $functionName = lcfirst(str_replace('_', '', ucwords($operation, '_')));
+        if ($this->{$functionName}()) {
             return $this->resultRedirectFactory->create()->setUrl($this->_redirect->getRefererUrl());
         }
     }
 
-    private function massGenerateShipping(){
+    private function massGenerateShipping()
+    {
         /**
-         * @var \Magento\Ui\Component\MassAction\Filter $filter
+         * @var Filter $filter
          */
         $filter = $this->filterFactory->create();
         $collection = $filter->getCollection($this->collectionFactory->create());
@@ -102,47 +109,50 @@ class Operations extends Action
         $failureCount = 0;
         $total = $collection->count();
         $failureDetail = [];
-        foreach ($collection as $order){
-            $shipmentResult = $this->shippingProcessor->generatecorreoShipping($order);
-            if($shipmentResult->getStatus()){
+        foreach ($collection as $order) {
+            $shipmentResult = $this->shippingProcessor->generateCorreoShipping($order);
+            if ($shipmentResult->getStatus()) {
                 $successCount++;
-            }
-            else{
+            } else {
                 $failureCount++;
                 $failureDetail[] = "Order #" . $order->getIncrementId() . ' - ' . $shipmentResult->getMessage();
             }
         }
 
-        if($successCount && !$failureCount){
+        if ($successCount && !$failureCount) {
             $this->messageManager->addSuccessMessage(__('Todos los pedidos se generaron con exito!'));
-        }
-        else{
-            if($successCount){
-                $this->messageManager->addSuccessMessage(__($successCount . '/' . $total . ' pedidos se generaron con exito!'));
+        } else {
+            if ($successCount) {
+                $this->messageManager->addSuccessMessage(
+                    __($successCount . '/' . $total . ' pedidos se generaron con exito!')
+                );
             }
-            $this->messageManager->addErrorMessage($failureCount . ' pedidos no se generaron con exito. ' . json_encode($failureDetail));
+            $this->messageManager->addErrorMessage(
+                $failureCount . ' pedidos no se generaron con exito. ' . json_encode($failureDetail)
+            );
         }
         return true;
     }
 
-    private function massPrintShippingLabel(){
+    private function massPrintShippingLabel()
+    {
         /**
-         * @var \Magento\Ui\Component\MassAction\Filter $filter
+         * @var Filter $filter
          */
         $filter = $this->filterFactory->create();
         $collection = $filter->getCollection($this->collectionFactory->create());
         /**
-         * @var \Magento\Sales\Model\Order $order
+         * @var Order $order
          */
         $labelContent = [];
-        foreach ($collection as $order){
-            if($order->hasShipments()){
+        foreach ($collection as $order) {
+            if ($order->hasShipments()) {
 
                 /**
-                 * @var \Magento\Sales\Model\Order\Shipment $shipment
+                 * @var Shipment $shipment
                  */
-                foreach ($order->getShipmentsCollection() as $shipment){
-                    foreach ($shipment->getTracksCollection()->getItems() as $track){
+                foreach ($order->getShipmentsCollection() as $shipment) {
+                    foreach ($shipment->getTracksCollection()->getItems() as $track) {
                         $labelContent[] = $this->shippingProcessor->getLabel($track->getTrackNumber());
                     }
                 }
@@ -151,47 +161,79 @@ class Operations extends Action
 
         $pdfName        = 'guia_masiva_'.date_timestamp_get(date_create()) . '.pdf';
 
-        if(!empty($labelContent)) {
+        if (!empty($labelContent)) {
             $outputPdf = $this->_labelGeneratorFactory->create()->combineLabelsPdf($labelContent);
             return $this->_fileFactory->create(
                 $pdfName,
                 $outputPdf->render(),
-                \Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR,
+                DirectoryList::VAR_DIR,
                 'application/pdf'
             );
-        }
-        else{
-            $this->messageManager->addWarningMessage('Los pedidos seleccionados no tienen una etiqueta correo disponible.');
+        } else {
+            $this->messageManager->addWarningMessage(
+                'Los pedidos seleccionados no tienen una etiqueta correo disponible.'
+            );
         }
         return true;
     }
 
-    private function printShippingLabel(){
+    /**
+     * @throws Zend_Pdf_Exception
+     */
+    public function printShippingLabel()
+    {
         $orderId = $this->getRequest()->getParam('order_id');
-        if(!empty($orderId)){
+        if (!empty($orderId)) {
             $labelContent = [];
             $order = $this->orderRepository->get($orderId);
             /**
-             * @var \Magento\Sales\Model\Order\Shipment $shipment
+             * @var Shipment $shipment
              */
-            foreach ($order->getShipmentsCollection() as $shipment){
-                foreach ($shipment->getTracksCollection()->getItems() as $track){
-                    $labelContent[] = $this->shippingProcessor->getLabel($track->getTrackNumber());
+            foreach ($order->getShipmentsCollection() as $shipment) {
+                foreach ($shipment->getTracksCollection()->getItems() as $track) {
+                    $base64 = $this->shippingProcessor->getLabel($track->getTrackNumber());
                 }
             }
 
-            $pdfName        = $order->getIncrementId() . '_' . date_timestamp_get(date_create()) . '.pdf';
-            if(!empty($labelContent)) {
-                $outputPdf = $this->_labelGeneratorFactory->create()->combineLabelsPdf($labelContent);
-                return $this->_fileFactory->create(
-                    $pdfName,
-                    $outputPdf->render(),
-                    \Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR,
-                    'application/pdf'
-                );
+            $pdf_decoded = base64_decode($base64['fileBase64']);
+            array_push($labelContent, $pdf_decoded);
+            $outputPdf = $this->_labelGeneratorFactory->create()->combineLabelsPdf($labelContent);
+            return $this->_fileFactory->create(
+                $base64['filename'],
+                $outputPdf->render(),
+                DirectoryList::VAR_DIR,
+                'application/pdf'
+            );
+
+        }
+        return true;
+    }
+
+    public function cancelShipping()
+    {
+        $orderId = $this->getRequest()->getParam('order_id');
+        if (!empty($orderId)) {
+            $cancelShipping = false;
+            $order = $this->orderRepository->get($orderId);
+            /**
+             * @var Shipment $shipment
+             */
+            foreach ($order->getShipmentsCollection() as $shipment) {
+                foreach ($shipment->getTracksCollection()->getItems() as $track) {
+                    $cancelShipping = $this->shippingProcessor->cancelShipping($track->getTrackNumber());
+                }
             }
-            else{
-                $this->messageManager->addWarningMessage('El pedido no tiene una etiqueta correo disponible.');
+
+            if ($cancelShipping) {
+                $this->messageManager->addSuccessMessage(
+                    'El envio se cancelo con exito.'
+                );
+                $cancelResult = new \Magento\Framework\DataObject;
+                $cancelResult->setMessage('Se cancelo el envio con exito');
+            } else {
+                $this->messageManager->addWarningMessage(
+                    'La cancelacion del envio falló.'
+                );
             }
         }
         return true;

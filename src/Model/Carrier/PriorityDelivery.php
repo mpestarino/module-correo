@@ -1,18 +1,26 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
 namespace Tiargsa\CorreoArgentino\Model\Carrier;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
+use Magento\Quote\Model\Quote\Address\RateResult\Method;
+use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
+use Magento\Shipping\Model\Rate\ResultFactory;
+use Psr\Log\LoggerInterface;
+use Tiargsa\CorreoArgentino\Helper\Data;
 use Tiargsa\CorreoArgentino\Model\ShippingProcessor;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
+use Tiargsa\CorreoArgentino\Service\CorreoApiService;
 
 class PriorityDelivery extends AbstractCarrier implements CarrierInterface
 {
@@ -28,12 +36,12 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
      */
     protected $_isFixed = true;
     /**
-     * @var \Magento\Shipping\Model\Rate\ResultFactory
+     * @var ResultFactory
      */
     protected $_rateResultFactory;
 
     /**
-     * @var \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory
+     * @var MethodFactory
      */
     protected $_rateMethodFactory;
 
@@ -43,28 +51,28 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
     protected $shippingProcessor ;
 
     /**
-     * @var \Tiargsa\CorreoArgentino\Helper\Data
+     * @var Data
      */
     protected $correoHelper;
 
     /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory
-     * @param \Psr\Log\LoggerInterface $logger
-     * @param \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory
-     * @param \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory
-     * @param \Tiargsa\CorreoArgentino\Service\CorreoApiService $correoApiService
+     * @param ScopeConfigInterface $scopeConfig
+     * @param ErrorFactory $rateErrorFactory
+     * @param LoggerInterface $logger
+     * @param ResultFactory $rateResultFactory
+     * @param MethodFactory $rateMethodFactory
+     * @param CorreoApiService $correoApiService
      * @param array $data
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory $rateErrorFactory,
-        \Psr\Log\LoggerInterface $logger,
-        \Magento\Shipping\Model\Rate\ResultFactory $rateResultFactory,
-        \Magento\Quote\Model\Quote\Address\RateResult\MethodFactory $rateMethodFactory,
-        \Tiargsa\CorreoArgentino\Model\ShippingProcessor $shippingProcessor,
-        \Tiargsa\CorreoArgentino\Helper\Data $correoHelper,
-        array $data = []
+        ScopeConfigInterface $scopeConfig,
+        ErrorFactory         $rateErrorFactory,
+        LoggerInterface      $logger,
+        ResultFactory        $rateResultFactory,
+        MethodFactory        $rateMethodFactory,
+        ShippingProcessor    $shippingProcessor,
+        Data                 $correoHelper,
+        array                $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
@@ -119,16 +127,20 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
     private function getShippingPrice(RateRequest $request)
     {
         $shippingPrice = false;
-        if(!$request->getFreeShipping()) {
-            $rate = $this->shippingProcessor->getRate($request->getAllItems(), $request->getDestPostcode(), \Tiargsa\CorreoArgentino\Model\Carrier\PriorityDelivery::CARRIER_CODE);
-            if($rate->getStatus()){
+        if (!$request->getFreeShipping()) {
+            $rate = $this->shippingProcessor
+                ->getRate(
+                    $request->getAllItems(),
+                    $request->getDestPostcode(),
+                    \Tiargsa\CorreoArgentino\Model\Carrier\PriorityDelivery::CARRIER_CODE
+                );
+            if ($rate->getStatus()) {
                 $shippingPrice = $rate->getPrice();
             }
-            if(!is_bool($shippingPrice)) {
+            if (!is_bool($shippingPrice)) {
                 $shippingPrice = $this->getFinalPriceWithHandlingFee($shippingPrice);
             }
-        }
-        else{
+        } else {
             $shippingPrice = 0;
         }
 
@@ -139,11 +151,11 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
      * Creates result method
      *
      * @param int|float $shippingPrice
-     * @return \Magento\Quote\Model\Quote\Address\RateResult\Method
+     * @return Method
      */
     private function createResultMethod($shippingPrice)
     {
-        /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
+        /** @var Method $method */
         $method = $this->_rateMethodFactory->create();
 
         $method->setCarrier(self::CARRIER_CODE);

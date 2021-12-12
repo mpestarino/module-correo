@@ -1,7 +1,7 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
@@ -84,7 +84,7 @@ class AfterPlaceOrder implements ObserverInterface
 
         if($order->getShippingMethod() == \Tiargsa\CorreoArgentino\Model\Carrier\PickupDelivery::CARRIER_CODE . '_' . \Tiargsa\CorreoArgentino\Model\Carrier\PickupDelivery::METHOD_CODE) {
             $order->setCodigoSucursalcorreo($quote->getCodigoSucursalcorreo());
-            $order->setShippingDescription($order->getShippingDescription() . ' - ' . $this->checkoutSession->getNombrecorreoSucursal());
+            $order->setShippingDescription($order->getShippingDescription() . ' - ' . $this->checkoutSession->getNombreCorreoSucursal());
         }
 
         $this->orderRepository->save($order);
@@ -117,8 +117,8 @@ class AfterPlaceOrder implements ObserverInterface
             }
         }
 
-        $this->checkoutSession->unsCotizacioncorreoSucursal();
-        $this->checkoutSession->unsNombrecorreoSucursal();
+        $this->checkoutSession->unsCotizacionCorreoSucursal();
+        $this->checkoutSession->unsNombreCorreoSucursal();
 
         return $this;
     }

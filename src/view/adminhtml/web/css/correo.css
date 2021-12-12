@@ -1,15 +1,14 @@
-.admin__menu #menu-Tiargsa-correo-menuprincipal > a:before  {
-    opacity: 0.65;
-    content: '';
-    font-size: 2.4rem;
-    display: block;
-    position: relative;
-    top: -0.3rem;
-    width: 28px;
-    height: 23px;
-    background: url('../images/correo_icon.png');
-    background-size: 28px 23px;
-    margin: 0 auto;
+#menu-tiargsa-correo-menuprincipal  > a:before{
+    content:'';
+    background:url(img/correo_icon.png) no-repeat center center;
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    background-size: 41px 21px;
 }
-
-.admin__menu #menu-Tiargsa-correo-menuprincipal:hover > a:before {opacity: 1;}
+#menu-tiargsa-correo-menuprincipal._active > a:before,
+#menu-tiargsa-correo-menuprincipal:hover > a:before{
+    content:'';
+    background:url(img/correo_icon.png) no-repeat center center;
+    background-size: 41px 21px;
+    filter: grayscale(0%);
+}

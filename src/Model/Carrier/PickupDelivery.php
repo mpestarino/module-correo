@@ -12,6 +12,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Address\RateResult\ErrorFactory;
+use Magento\Quote\Model\Quote\Address\RateResult\Method;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
@@ -134,16 +135,20 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
     private function getShippingPrice(RateRequest $request)
     {
         $shippingPrice = false;
-        if(!$request->getFreeShipping()) {
-            $rate = $this->shippingProcessor->getRate($request->getAllItems(), $request->getDestPostcode(), \Tiargsa\CorreoArgentino\Model\Carrier\PickupDelivery::CARRIER_CODE);
-            if($rate->getStatus()){
+        if (!$request->getFreeShipping()) {
+            $rate = $this->shippingProcessor
+                ->getRate(
+                    $request->getAllItems(),
+                    $request->getDestPostcode(),
+                    PickupDelivery::CARRIER_CODE
+                );
+            if ($rate->getStatus()) {
                 $shippingPrice = $rate->getPrice();
             }
-            if(!is_bool($shippingPrice)) {
+            if (!is_bool($shippingPrice)) {
                 $shippingPrice = $this->getFinalPriceWithHandlingFee($shippingPrice);
             }
-        }
-        else{
+        } else {
             $shippingPrice = 0;
         }
 
@@ -154,11 +159,11 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
      * Creates result method
      *
      * @param int|float $shippingPrice
-     * @return \Magento\Quote\Model\Quote\Address\RateResult\Method
+     * @return Method
      */
     private function createResultMethod($shippingPrice)
     {
-        /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
+        /** @var Method $method */
         $method = $this->_rateMethodFactory->create();
 
         $method->setCarrier(self::CARRIER_CODE);

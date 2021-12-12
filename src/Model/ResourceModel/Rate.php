@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Drubu Team
+ * @author Tiarg Team
  * @copyright Copyright (c) 2021 Drubu
  * @package Tiargsa_CorreoArgentino
  */

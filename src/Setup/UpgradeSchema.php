@@ -1,7 +1,7 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
@@ -20,13 +20,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $setup->startSetup();
 
-        if(version_compare($context->getVersion(), '2.0.0', '<')) {
+        if (version_compare($context->getVersion(), '2.0.0', '<')) {
             $this->upgradeTo200($setup);
         }
         $setup->endSetup();
     }
 
-    private function upgradeTo200(SchemaSetupInterface $setup){
+    private function upgradeTo200(SchemaSetupInterface $setup)
+    {
         $tables2delete = [
             'ids_CorreoArgentino_guia_generada',
             'ids_CorreoArgentino_codigo_postal',
@@ -37,7 +38,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         ];
 
         foreach ($tables2delete as $table) {
-            if($setup->tableExists($table)) {
+            if ($setup->tableExists($table)) {
                 $setup->getConnection()->dropTable($table);
             }
         }
@@ -54,15 +55,15 @@ class UpgradeSchema implements UpgradeSchemaInterface
         ];
 
         foreach ($tables2rename as $table) {
-            if($setup->tableExists($table['from'])) {
-                $setup->getConnection()->renameTable($table['from'],$table['to']);
+            if ($setup->tableExists($table['from'])) {
+                $setup->getConnection()->renameTable($table['from'], $table['to']);
             }
         }
 
         /*
          * Creates Tiargsa_CorreoArgentino_zona table if not exist
          */
-        if(!$setup->tableExists('Tiargsa_CorreoArgentino_zona')){
+        if (!$setup->tableExists('Tiargsa_CorreoArgentino_zona')) {
             $TiargsacorreoZona = $setup->getConnection()
                 ->newTable($setup->getTable('Tiargsa_CorreoArgentino_zona'))
                 ->addColumn(
@@ -79,7 +80,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         /*
          * Creates Tiargsa_CorreoArgentino_tarifa table if not exist
          */
-        if(!$setup->tableExists("Tiargsa_CorreoArgentino_tarifa")) {
+        if (!$setup->tableExists("Tiargsa_CorreoArgentino_tarifa")) {
             $TiargsacorreoTarifa = $setup->getConnection()
                 ->newTable($setup->getTable('Tiargsa_CorreoArgentino_tarifa'))
                 ->addColumn(
@@ -88,27 +89,57 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     6,
                     ['identity' => true, 'nullable' => false, 'primary' => true]
                 )
-                ->addColumn(RateInterface::RANGE, Table::TYPE_DECIMAL, '10,2', ['nullable' => false])
-                ->addColumn(RateInterface::STANDARD_VALUE, Table::TYPE_DECIMAL, '10,2', ['nullable' => false])
-                ->addColumn(RateInterface::PICKUP_VALUE, Table::TYPE_DECIMAL, '10,2', ['nullable' => true, 'default' => null])
-                ->addColumn(RateInterface::PRIORITY_VALUE, Table::TYPE_DECIMAL, '10,2', ['nullable' => true, 'default' => null])
-                ->addColumn(ZoneInterface::ZONE_ID, Table::TYPE_SMALLINT, 6, ['nullable' => false])
+                ->addColumn(
+                    RateInterface::RANGE,
+                    Table::TYPE_DECIMAL,
+                    '10,2',
+                    ['nullable' => false]
+                )
+                ->addColumn(
+                    RateInterface::STANDARD_VALUE,
+                    Table::TYPE_DECIMAL,
+                    '10,2',
+                    ['nullable' => false]
+                )
+                ->addColumn(
+                    RateInterface::PICKUP_VALUE,
+                    Table::TYPE_DECIMAL,
+                    '10,2',
+                    ['nullable' => true, 'default' => null]
+                )
+                ->addColumn(
+                    RateInterface::PRIORITY_VALUE,
+                    Table::TYPE_DECIMAL,
+                    '10,2',
+                    ['nullable' => true, 'default' => null]
+                )
+                ->addColumn(
+                    ZoneInterface::ZONE_ID,
+                    Table::TYPE_SMALLINT,
+                    6,
+                    ['nullable' => false]
+                )
                 ->addIndex(
                     $setup->getIdxName('Tiargsa_CorreoArgentino_tarifa', [RateInterface::ZONE_ID]),
                     [RateInterface::ZONE_ID]
                 )
                 ->addForeignKey(
-                    $setup->getFkName('Tiargsa_CorreoArgentino_tarifa', RateInterface::ZONE_ID, 'Tiargsa_CorreoArgentino_zona', ZoneInterface::ZONE_ID),
+                    $setup->getFkName(
+                        'Tiargsa_CorreoArgentino_tarifa',
+                        RateInterface::ZONE_ID,
+                        'Tiargsa_CorreoArgentino_zona',
+                        ZoneInterface::ZONE_ID
+                    ),
                     RateInterface::ZONE_ID,
                     'Tiargsa_CorreoArgentino_zona',
                     ZoneInterface::ZONE_ID,
-                    \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+                    Table::ACTION_CASCADE
                 );
 
             $setup->getConnection()->createTable($TiargsacorreoTarifa);
         }
 
-        if(!$setup->getConnection()->tableColumnExists('quote','codigo_sucursal_CorreoArgentino')) {
+        if (!$setup->getConnection()->tableColumnExists('quote', 'codigo_sucursal_CorreoArgentino')) {
             $setup->getConnection()->addColumn('quote', 'codigo_sucursal_CorreoArgentino', [
                 'type' => Table::TYPE_INTEGER,
                 'nullable' => true,

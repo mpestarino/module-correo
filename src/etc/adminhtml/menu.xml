@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
-  ~ @author Drubu Team
-  ~ @copyright Copyright (c) 2021 Drubu
+  ~ @author Tiarg Team
+  ~ @copyright Copyright (c) 2021 Tiarg
   ~ @package Tiargsa_CorreoArgentino
   -->
 
@@ -9,19 +9,10 @@
     <menu>
         <add
             id="Tiargsa_CorreoArgentino::menuPrincipal"
-            title="correo" module="Magento_Config"
+            title="Correo Argentino" module="Magento_Config"
             sortOrder="70"
             resource="Magento_Config::brand"
         />
-<!--        <add-->
-<!--            id="Tiargsa_CorreoArgentino::tarifa_admin"-->
-<!--            title="Administracion de tarifas por tabla"-->
-<!--            module="Tiargsa_CorreoArgentino"-->
-<!--            sortOrder="100"-->
-<!--            parent="Tiargsa_CorreoArgentino::menuPrincipal"-->
-<!--            action="correo/rate/index"-->
-<!--            resource="Tiargsa_CorreoArgentino::rate_operations"-->
-<!--        />-->
         <add
             id="Tiargsa_CorreoArgentino::guias"
             title="Generación masiva de guías"

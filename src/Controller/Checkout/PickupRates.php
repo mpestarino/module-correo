@@ -1,7 +1,7 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
@@ -81,10 +81,10 @@ class PickupRates implements ActionInterface, CsrfAwareActionInterface
         $status = $rate->getStatus();
         if ($status) {
             $quote = $this->quoteRepository->getActive($this->checkoutSession->getQuoteId());
-            $quote->setCodigoSucursalcorreo($storeId);
+            $quote->setCodigoSucursalCorreo($storeId);
             $this->quoteRepository->save($quote);
-            $this->checkoutSession->setNombrecorreoSucursal($storeName);
-            $this->checkoutSession->setCotizacioncorreoSucursal($rate->getPrice());
+            $this->checkoutSession->setNombreCorreoSucursal($storeName);
+            $this->checkoutSession->setCotizacionCorreoSucursal($rate->getPrice());
         }
         $jsonResponse = $this->resultFactory->create(\Magento\Framework\Controller\ResultFactory::TYPE_JSON);
         $jsonResponse->setData(['price' => $price, 'status' => $status]);

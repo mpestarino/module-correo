@@ -1,32 +1,37 @@
 <?php
 /**
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
 namespace Tiargsa\CorreoArgentino\Block\Adminhtml\Rate;
 
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\Data\FormFactory;
+use Magento\Framework\Registry;
+use Tiargsa\CorreoArgentino\Model\RateFactory;
+
 class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
     /**
-     * @var \Tiargsa\CorreoArgentino\Model\RateFactory
+     * @var RateFactory
      */
     protected $_tarifaFactory;
 
     /**
      * Form constructor.
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param \Magento\Framework\Data\FormFactory $formFactory
-     * @param \Tiargsa\CorreoArgentino\Model\RateFactory $tarifaFactory
+     * @param Context $context
+     * @param Registry $registry
+     * @param FormFactory $formFactory
+     * @param RateFactory $tarifaFactory
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Data\FormFactory $formFactory,
-        \Tiargsa\CorreoArgentino\Model\RateFactory $tarifaFactory,
+        Context $context,
+        Registry $registry,
+        FormFactory $formFactory,
+        RateFactory $tarifaFactory,
         array $data = []
     ) {
         $this->_tarifaFactory = $tarifaFactory;
@@ -50,17 +55,16 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
             ->join(
                 ['z' => $tarifas->getTable('Tiargsa_CorreoArgentino_zona')],
                 'main_table.zona_id = z.zona_id',
-                ['nombre_zona'=>'z.nombre']);
+                ['nombre_zona'=>'z.nombre']
+            );
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $this->_formFactory->create(
             ['data' => ['id' => 'edit_form', 'action' => $this->getData('action'), 'method' => 'post']]
         );
 
-        foreach ($tarifas as $_tarifa)
-        {
-            if($zonaId != $_tarifa->getZonaId())
-            {
+        foreach ($tarifas as $_tarifa) {
+            if ($zonaId != $_tarifa->getZonaId()) {
                 $fieldsetEstandar = $form->addFieldset(
                     "zona_{$_tarifa->getZonaId()}_estandar",
                     ['legend' => __("{$_tarifa->getNombreZona()} - correo Estandar"), 'class' => 'fieldset-wide']
@@ -120,5 +124,4 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
 
         return parent::_prepareForm();
     }
-
 }

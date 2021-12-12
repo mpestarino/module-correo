@@ -3,4 +3,7 @@
     <type name="\Magento\Sales\Block\Adminhtml\Order\View">
         <plugin name="Tiargsa_CorreoArgentino::printShippingLabel" type="Tiargsa\CorreoArgentino\Plugin\Adminhtml\Order\PrintShippingLabel" />
     </type>
+    <type name="\Magento\Sales\Block\Adminhtml\Order\View">
+        <plugin name="Tiargsa_CorreoArgentino::cancelShipping" type="Tiargsa\CorreoArgentino\Plugin\Adminhtml\Order\CancelShipping" />
+    </type>
 </config>

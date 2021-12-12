@@ -6,8 +6,8 @@
  */
 
 namespace Tiargsa\CorreoArgentino\Model\Rate\DataProvider;
-use Tiargsa\CorreoArgentino\Model\ResourceModel\Rate\CollectionFactory;
 
+use Tiargsa\CorreoArgentino\Model\ResourceModel\Rate\CollectionFactory;
 
 class Form extends \Magento\Ui\DataProvider\AbstractDataProvider
 {

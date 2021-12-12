@@ -1,6 +1,6 @@
 /*******************************************************************************
- * @author Drubu Team
- * @copyright Copyright (c) 2021 Drubu
+ * @author Tiarg Team
+ * @copyright Copyright (c) 2021 Tiarg
  * @package Tiargsa_CorreoArgentino
  */
 
@@ -43,7 +43,7 @@ function (
             defaults: {
                 detailsTemplate: 'Tiargsa_CorreoArgentino/billing-address/details',
             },
-            getcorreoStreetAttributes: function (customAttributes) {
+            getCorreoStreetAttributes: function (customAttributes) {
                 var correoAttributes = ['altura','piso','departamento'];
                 var attributeLabels = '';
                 for(let pos in correoAttributes) {
