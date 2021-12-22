@@ -18,6 +18,7 @@ use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Magento\Shipping\Model\Tracking\Result\StatusFactory;
 use Psr\Log\LoggerInterface;
 use Tiargsa\CorreoArgentino\Helper\Data;
 use Tiargsa\CorreoArgentino\Model\ShippingProcessor;
@@ -27,6 +28,17 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
 {
     const CARRIER_CODE = 'correosucursal';
     const METHOD_CODE = 'sucursal';
+
+    /**
+     * @var \Magento\Shipping\Model\Tracking\ResultFactory
+     */
+    protected \Magento\Shipping\Model\Tracking\ResultFactory $_trackFactory;
+
+    /**
+     * @var StatusFactory
+     */
+    protected StatusFactory $_trackStatusFactory;
+
     /**
      * @var string
      */
@@ -81,6 +93,8 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
         Data $correoHelper,
         Session $checkoutSession,
         \Tiargsa\CorreoArgentino\Model\ShippingProcessor $shippingProcessor,
+        \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+        StatusFactory $trackStatusFactory,
         array $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
@@ -88,6 +102,8 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
         $this->correoHelper = $correoHelper;
         $this->checkoutSession = $checkoutSession;
         $this->shippingProcessor = $shippingProcessor;
+        $this->_trackFactory = $trackFactory;
+        $this->_trackStatusFactory = $trackStatusFactory;
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
     }
     /**
@@ -173,6 +189,26 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
         $method->setPrice($shippingPrice);
         $method->setCost($shippingPrice);
         return $method;
+    }
+
+    /**
+     * @param $tracking_number
+     *
+     * @return Status
+     */
+    public function getTrackingInfo($tracking_number)
+    {
+        $result = $this->_trackFactory->create();
+        $tracking = $this->_trackStatusFactory->create();
+
+        $tracking->setCarrier($this->_code);
+        $tracking->setCarrierTitle('Correo Argentino');
+        $tracking->setTracking($tracking_number);
+        $tracking->setUrl($this->correoHelper->getHistoryUrlCorreo(). $tracking_number);
+
+        $result->append($tracking);
+
+        return $tracking;
     }
 
     public function isTrackingAvailable()

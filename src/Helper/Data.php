@@ -108,6 +108,13 @@ class Data extends AbstractHelper
             $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_dev_urls/rates');
     }
 
+    public function getHistoryUrlCorreo()
+    {
+        return $this->isProductionMode() ?
+            $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_prod_urls/correohistory') :
+            $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_dev_urls/correohistory');
+    }
+
     public function getCreateOrderUrl()
     {
         return $this->isProductionMode() ?

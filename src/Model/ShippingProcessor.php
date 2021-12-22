@@ -116,7 +116,7 @@ class ShippingProcessor
 
             $paramsObj = new DataObject();
             $paramsObj->setData($params);
-            $ratesResult = [$this->correoApiService->getRates($paramsObj)];
+            $ratesResult = $this->correoApiService->getRates($paramsObj);
 
             if ($this->correoHelper->isDebugEnable()) {
                 $statusMsge = isset($ratesResult["tarifaConIva"]["total"]) ? 'successful' : 'with errors';
@@ -129,8 +129,7 @@ class ShippingProcessor
         }
 
         //ilegal string offset
-        var_dump($ratesResult);
-        die;
+
         $arrayRates = $ratesResult['rates'];
         foreach ($arrayRates as $rates) {
             if ($rates['description'] == $deliverMethod) {

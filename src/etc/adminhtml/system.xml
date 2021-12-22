@@ -288,6 +288,11 @@
                         <comment>Lista todas las sucursales de correo.</comment>
                         <validate>required-entry</validate>
                     </field>
+                    <field id="correohistory" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Url para seguimiento de envios (pagina de Correo Argentino)</label>
+                        <comment>Url para seguimiento de envios (pagina de Correo Argentino).</comment>
+                        <validate>required-entry</validate>
+                    </field>
                 </group>
                 <group id="correo_rest_dev_urls" translate="label" type="text" sortOrder="403" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>correo Urls Rest desarrollo</label>
@@ -322,6 +327,11 @@
                     <field id="locations" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Listar todas las sucursales</label>
                         <comment>Lista todas las sucursales de correo.</comment>
+                        <validate>required-entry</validate>
+                    </field>
+                    <field id="correohistory" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Url para seguimiento de envios (pagina de Correo Argentino)</label>
+                        <comment>Url para seguimiento de envios (pagina de Correo Argentino).</comment>
                         <validate>required-entry</validate>
                     </field>
                 </group>
