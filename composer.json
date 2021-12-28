@@ -1,14 +1,19 @@
 {
   "name": "mpestarino/module-correo-argentino",
   "type": "magento2-module",
+  "license": [
+    "OSL-3.0",
+    "AFL-3.0"
+  ],
   "autoload": {
     "files": [
-      "Tiargsa/CorreoArgentino/registration.php"
+      "registration.php"
     ],
     "psr-4": {
-      "Tiargsa\\CorreoArgentino\\": "src/"
+      "Tiargsa\\CorreoArgentino\\": ""
     }
   },
+  "version": "1.0.8",
   "require": {
     "ext-curl": "*",
     "ext-json": "*",
