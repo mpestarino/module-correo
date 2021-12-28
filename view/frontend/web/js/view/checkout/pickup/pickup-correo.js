@@ -46,7 +46,6 @@ define([
 
         storeChange: async function (obj, event) {
             if (this.selectedStore()) {
-                console.log();
                 var self = this;
                 $.ajax({
                     url: url.build('correo/checkout/pickuprates'),

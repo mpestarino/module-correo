@@ -48,7 +48,7 @@ class OrderCommentHistory
             foreach ($orderShipping->getShipmentsCollection() as $shipment) {
                 foreach ($shipment->getTracksCollection()->getItems() as $track) {
 
-                    $shippingHistory = $this->apiService->getShippingHistory("1801893I49C3031901");
+                    $shippingHistory = $this->apiService->getShippingHistory($track->getTrackNumber());
 
                     if (!isset($shippingHistory[0]['event'][0]['status'])) {
                         continue;
