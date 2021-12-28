@@ -46,20 +46,20 @@ class InstallSchema implements InstallSchemaInterface
                 ]
             ],
             [
-                'columnName' => 'codigo_sucursal_CorreoArgentino',
+                'columnName' => 'codigo_sucursal_correoargentino',
                 'tableName' => $quoteTable,
                 'definition' => [
-                    'type' => Table::TYPE_INTEGER,
+                    'type' => Table::TYPE_TEXT,
                     'nullable' => true,
                     'comment' => 'Codigo de sucursal correo',
                     'default' => null
                 ]
             ],
             [
-                'columnName' => 'codigo_sucursal_CorreoArgentino',
+                'columnName' => 'codigo_sucursal_correoargentino',
                 'tableName' => $salesOrderTable,
                 'definition' => [
-                    'type' => Table::TYPE_INTEGER,
+                    'type' => Table::TYPE_TEXT,
                     'nullable' => true,
                     'comment' => 'Codigo de sucursal correo',
                     'default' => null

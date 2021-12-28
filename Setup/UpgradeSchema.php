@@ -139,9 +139,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $setup->getConnection()->createTable($TiargsacorreoTarifa);
         }
 
-        if (!$setup->getConnection()->tableColumnExists('quote', 'codigo_sucursal_CorreoArgentino')) {
-            $setup->getConnection()->addColumn('quote', 'codigo_sucursal_CorreoArgentino', [
-                'type' => Table::TYPE_INTEGER,
+        if (!$setup->getConnection()->tableColumnExists('quote', 'codigo_sucursal_correoargentino')) {
+            $setup->getConnection()->addColumn('quote', 'codigo_sucursal_correoargentino', [
+                'type' => Table::TYPE_TEXT,
                 'nullable' => true,
                 'comment' => 'Codigo de sucursal correo',
                 'default' => null

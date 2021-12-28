@@ -46,7 +46,7 @@ define([
 
         storeChange: async function (obj, event) {
             if (this.selectedStore()) {
-                console.log('barraaaacaaaas');
+                console.log();
                 var self = this;
                 $.ajax({
                     url: url.build('correo/checkout/pickuprates'),
@@ -54,7 +54,7 @@ define([
                     dataType: 'json',
                     showLoader: true,
                     data: {
-                        //store_id: checkoutConfig.correo.stores[this.selectedStore()].codigo,
+                        store_id: checkoutConfig.correo.stores[this.selectedStore()].agency_id,
                         store_name: this.selectedStore(),
                         quote_id: quote.getQuoteId(),
                         address_zip: quote.shippingAddress().postcode

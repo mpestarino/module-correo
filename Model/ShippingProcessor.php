@@ -321,7 +321,18 @@ class ShippingProcessor
                             //falta cambiar el campo tipo de numero a numero fijo
                         ],
                         "shippingData"  => [
-                            "address"   => "",
+                            "address"   => [
+                                "zipCode" => $order->getShippingAddress()->getPostCode(),
+                                "streetName" =>
+                                    $order->getShippingAddress()
+                                        ->getStreetLine(1) . ' ' . $order->getShippingAddress()->getStreetLine(2),
+                                "streetNumber" => $order->getShippingAddress()->getAltura() ?
+                                    $order->getShippingAddress()->getAltura() : '',
+                                "cityName" => $order->getShippingAddress()->getCity(),
+                                "department" => $order->getShippingAddress()->getDepartamento(),
+                                "floor" => $order->getShippingAddress()->getPiso(),
+                                "state" => "A"
+                            ],
                             "areaCodeCellphone" => "54",
                             "areaCodePhone" => "54",
                             "cellphoneNumber"   => $order->getShippingAddress()->getCelular() ?
@@ -336,24 +347,12 @@ class ShippingProcessor
                     ],
                 ];
 
-                if (!empty($order->getCodigoSucursalcorreo())) {//es retiro en sucursal
-                    $params['order']['agencyId'] = $order->getCodigoSucursalcorreo();
+                if (!empty($order->getCodigoSucursalCorreoargentino() && $order->getCodigoSucursalCorreoargentino() != null)) {//es retiro en sucursal
+                    $params['order']['agencyId'] = $order->getCodigoSucursalCorreoargentino();
                     $params['order']['deliveryType'] = "agency";
+
                 } else {
                     $params['order']['deliveryType'] = "homeDelivery";
-                    $params['order']["shippingData"]["address"] = [
-                            "zipCode" => $order->getShippingAddress()->getPostCode(),
-                            "streetName" =>
-                                $order->getShippingAddress()
-                                    ->getStreetLine(1) . ' ' . $order->getShippingAddress()->getStreetLine(2),
-                            "streetNumber" => $order->getShippingAddress()->getAltura() ?
-                                $order->getShippingAddress()->getAltura() : '',
-                            "cityName" => $order->getShippingAddress()->getCity(),
-                            "department" => $order->getShippingAddress()->getDepartamento(),
-                            "floor" => $order->getShippingAddress()->getPiso(),
-                            "state" => "A"
-                        //lo dejamos duro por lo mismo que arriba
-                    ];
                 }
 
                 $response = $this->correoApiService->createOrder(new DataObject($params));

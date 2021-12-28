@@ -49,8 +49,7 @@ class PickupRates implements ActionInterface, CsrfAwareActionInterface
         CheckoutSession $checkoutSession,
         \Tiargsa\CorreoArgentino\Model\ShippingProcessor $shippingProcessor,
         \Magento\Quote\Model\QuoteRepository $quoteRepository
-    )
-    {
+    ) {
         $this->request = $context->getRequest();
         $this->resultFactory = $resultFactory;
         $this->checkoutSession = $checkoutSession;
@@ -68,24 +67,14 @@ class PickupRates implements ActionInterface, CsrfAwareActionInterface
     {
         $request = $this->request;
         $status = true;
-        //$storeId = $request->getParam('store_id') ? $request->getParam('store_id') : null;
-        $addressZip = $request->getParam('address_zip') ? $request->getParam('address_zip') : null;
+        $storeId = $request->getParam('store_id') ? $request->getParam('store_id') : null;
         $storeName = $request->getParam('store_name') ? $request->getParam('store_name') : null;
-        //$rate = $this->shippingProcessor->getRate($this->checkoutSession->getQuote()->getAllItems(), $addressZip, \Tiargsa\CorreoArgentino\Model\Carrier\PickupDelivery::CARRIER_CODE, $storeId);
 
-//        if ($this->checkoutSession->getFreeShipping()) {
-//            $price = 0;
-//        } else {
-//            $price = $rate->getPrice();
-//        }
-        //$status = $rate->getStatus();
-        //if ($status) {
-//            $quote = $this->quoteRepository->getActive($this->checkoutSession->getQuoteId());
-//            //$quote->setCodigoSucursalCorreo($storeId);
-//            $this->quoteRepository->save($quote);
-            $this->checkoutSession->setNombreCorreoSucursal($storeName);
-        //    $this->checkoutSession->setCotizacionCorreoSucursal($rate->getPrice());
-        //}
+        $quote = $this->quoteRepository->getActive($this->checkoutSession->getQuoteId());
+        $quote->setCodigoSucursalCorreoargentino($storeId);
+        $this->quoteRepository->save($quote);
+        $this->checkoutSession->setNombreCorreoSucursal($storeName);
+
         $jsonResponse = $this->resultFactory->create(ResultFactory::TYPE_JSON);
         $jsonResponse->setData(['status' => $status]);
 
