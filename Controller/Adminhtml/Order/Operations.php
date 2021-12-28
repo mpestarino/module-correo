@@ -8,6 +8,7 @@
 namespace Tiargsa\CorreoArgentino\Controller\Adminhtml\Order;
 
 use Magento\Framework\DataObject;
+use Magento\Sales\Api\OrderStatusHistoryRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Shipment;
 use Magento\Sales\Model\ResourceModel\Order\CollectionFactory;
@@ -61,6 +62,11 @@ class Operations extends Action
     private $orderRepository;
 
     /**
+     * @var OrderStatusHistoryRepositoryInterface
+     */
+    protected $orderStatusRepository;
+
+    /**
      * @param Context $context
      * @param FilterFactory $filterFactory
      * @param CollectionFactory $collectionFactory
@@ -75,7 +81,8 @@ class Operations extends Action
         ShippingProcessor $shippingProcessor,
         LabelGeneratorFactory $labelGeneratorFactory,
         FileFactory $fileFactory,
-        SalesOrderRepositoryInterface $orderRepository
+        SalesOrderRepositoryInterface $orderRepository,
+        OrderStatusHistoryRepositoryInterface $orderStatusRepository
     ) {
         parent::__construct($context);
         $this->filterFactory = $filterFactory;
@@ -84,6 +91,7 @@ class Operations extends Action
         $this->_labelGeneratorFactory = $labelGeneratorFactory;
         $this->_fileFactory = $fileFactory;
         $this->orderRepository = $orderRepository;
+        $this->orderStatusRepository = $orderStatusRepository;
     }
 
     /**
@@ -195,11 +203,11 @@ class Operations extends Action
                 }
             }
 
-            $pdf_decoded = base64_decode($base64['fileBase64']);
+            $pdf_decoded = base64_decode($base64[0]['fileBase64']);
             array_push($labelContent, $pdf_decoded);
             $outputPdf = $this->_labelGeneratorFactory->create()->combineLabelsPdf($labelContent);
             return $this->_fileFactory->create(
-                $base64['filename'],
+                $base64[0]['filename'],
                 $outputPdf->render(),
                 DirectoryList::VAR_DIR,
                 'application/pdf'
@@ -230,6 +238,12 @@ class Operations extends Action
                 );
                 $cancelResult = new \Magento\Framework\DataObject;
                 $cancelResult->setMessage('Se cancelo el envio con exito');
+
+                $comment = $order->addStatusHistoryComment(
+                    'Estado del Envio Cancelado'
+                );
+
+                $this->orderStatusRepository->save($comment);
             } else {
                 $this->messageManager->addWarningMessage(
                     'La cancelacion del envio falló.'

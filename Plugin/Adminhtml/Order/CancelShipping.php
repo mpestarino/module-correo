@@ -8,6 +8,7 @@
 namespace Tiargsa\CorreoArgentino\Plugin\Adminhtml\Order;
 
 use Magento\Backend\Model\UrlInterface;
+use Magento\Sales\Api\OrderStatusHistoryRepositoryInterface;
 use Magento\Sales\Block\Adminhtml\Order\View;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Shipment;

@@ -128,13 +128,17 @@ class ShippingProcessor
             }
         }
 
+        $price = 0;
+        $status = false;
         //ilegal string offset
+        if (isset($ratesResult['rates'])) {
+            $arrayRates = $ratesResult['rates'];
 
-        $arrayRates = $ratesResult['rates'];
-        foreach ($arrayRates as $rates) {
-            if ($rates['description'] == $deliverMethod) {
-                $price = $rates['totalPrice'];
-                $status = true;
+            foreach ($arrayRates as $rates) {
+                if ($rates['description'] == $deliverMethod) {
+                    $price = $rates['totalPrice'];
+                    $status = true;
+                }
             }
         }
 

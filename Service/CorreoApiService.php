@@ -64,6 +64,27 @@ class CorreoApiService
     }
 
     /**
+     * @param $tracking
+     * @return DataObject
+     */
+    public function getShippingHistory($tracking)
+    {
+        if (empty($this->token)) {
+            $this->login();
+        }
+
+        $shippingByNumber =  $this->helper->getShippingByNumberUrl() . $tracking;
+        return $this->getDataFromResponse($this->doRequest(
+            $shippingByNumber,
+            [
+                'header' => [
+                    'Authorization: Bearer ' . $this->token
+                ]
+            ]
+        ));
+    }
+
+    /**
      * @return DataObject
      */
     public function getCancel($tracking)
@@ -150,35 +171,28 @@ class CorreoApiService
      */
     public function getLabel(string $tracking)
     {
-        $labelUrl = $this->helper->getLabelUrl(). "/" . $tracking;
+        $labelUrl = $this->helper->getLabelUrl();
 
         if (empty($this->token)) {
             $this->login();
         }
-
+        $params = [
+            [
+                "sellerId" => '18018',
+                "trackingNumber" => $tracking
+            ]
+        ];
         return $this->getDataFromResponse($this->doRequest(
             $labelUrl,
             [
+                'body' => $params,
                 'header' => [
+                    'Content-Type: application/json',
                     'Authorization: Bearer ' . $this->token
                 ]
-            ]
+            ],
+            Request::HTTP_METHOD_POST
         ));
-    }
-
-    /**
-     * @param DataObject $data
-     * @return DataObject
-     */
-    public function getShippingByNumber(DataObject $data)
-    {
-        if (empty($this->token)) {
-            $this->login();
-        }
-        return $this->getDataFromResponse($this->doRequest($this->helper->getShippingByNumberUrl(), [
-            'body' => $data->getData(),
-            'x-authorization-token' => $this->token
-        ], Request::HTTP_METHOD_POST));
     }
 
     /**
@@ -224,6 +238,7 @@ class CorreoApiService
 
         $lala = curl_getinfo($curl, CURLOPT_HTTPHEADER);
         $curlResponse = curl_exec($curl);
+
         $statusCode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
         curl_close($curl);

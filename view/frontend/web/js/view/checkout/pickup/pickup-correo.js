@@ -43,5 +43,35 @@ define([
 
             return this;
         },
+
+        storeChange: async function (obj, event) {
+            if (this.selectedStore()) {
+                console.log('barraaaacaaaas');
+                var self = this;
+                $.ajax({
+                    url: url.build('correo/checkout/pickuprates'),
+                    type: 'POST',
+                    dataType: 'json',
+                    showLoader: true,
+                    data: {
+                        //store_id: checkoutConfig.correo.stores[this.selectedStore()].codigo,
+                        store_name: this.selectedStore(),
+                        quote_id: quote.getQuoteId(),
+                        address_zip: quote.shippingAddress().postcode
+                    },
+                    complete: function (response) {
+                        if (response.status === 200 && response.responseJSON.status) {
+                            //let costoEnvio = priceUtils.formatPrice(response.responseJSON.price, quote.getPriceFormat());
+                            //jQuery('#label_method_sucursal_correosucursal').siblings('.col-price').children('span').text(costoEnvio);
+                            self.correoErrorMessage('');
+                        } else {
+                            self.correoErrorMessage('No se encontraron cotizaciones para la sucursal seleccionada');
+                        }
+                    },
+                    error: function (xhr, status, errorThrown) {
+                    }
+                });
+            }
+        },
     });
 });

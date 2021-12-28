@@ -204,7 +204,7 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
 
         return $tracking;
     }
-    
+
     public function isTrackingAvailable()
     {
         return true;
