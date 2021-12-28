@@ -1,5 +1,5 @@
 {
-  "name": "andreani/module-andreani-magento-2.3",
+  "name": "mpestarino/module-correo-argentino",
   "type": "magento2-module",
   "autoload": {
     "files": [
