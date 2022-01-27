@@ -178,7 +178,7 @@ class CorreoApiService
         }
         $params = [
             [
-                "sellerId" => '18018',
+                "sellerId" => '',
                 "trackingNumber" => $tracking
             ]
         ];

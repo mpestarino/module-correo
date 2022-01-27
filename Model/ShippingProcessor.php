@@ -214,7 +214,7 @@ class ShippingProcessor
      */
     public function generateCorreoShipping($order)
     {
-        $shipmentResult = new \Magento\Framework\DataObject;
+        $shipmentResult = new DataObject;
         $shippingLabelContent = [];
         $shipmentResult->setStatus(false);
         try {
@@ -266,7 +266,6 @@ class ShippingProcessor
                     foreach ($tracksCollection as $track) {
                         $shippingLabelContent[] = $this->getLabel($track->getTrackNumber());
                     }
-                    $this->generatePackageWithLabel($shipment->getId(), $shippingLabelContent, $packageWeight);
                     $shipmentResult->setShipmentId($shipment->getId());
                 }
                 $shipmentResult->setStatus(true);
@@ -384,6 +383,7 @@ class ShippingProcessor
                 $tracks = [];
                 $carrierTitle = $this->correoHelper->getTitleByType($carrierCode);
                 $tracking = $response['trackingNumber'];
+
                 /**
                  * @var ShipmentTrackCreationInterface $shipmentTrackCreation
                  */
@@ -402,8 +402,6 @@ class ShippingProcessor
                 $shipOrder = $this->shipOrderFactory->create();
                 $shipmentId = $shipOrder->execute($order->getId(), [], true, false, null, $tracks, [], null);
 
-                $this->generatePackageWithLabel($shipmentId, $shippingLabelContent, $packageWeight);
-
                 $shipmentResult->setShipmentId($shipmentId);
                 $shipmentResult->setStatus(true);
             }
@@ -411,35 +409,6 @@ class ShippingProcessor
             $shipmentResult->setMessage($e->getMessage());
         }
         return $shipmentResult;
-    }
-
-    private function generatePackageWithLabel($shipmentId, $shippingLabelContent, $packageWeight)
-    {
-        //creo el shipping label
-        /**
-         * @var ShipmentRepositoryInterface $shipmentRepository
-         */
-        $shipmentRepository = $this->shipmentRepositoryFactory->create();
-        $shipment = $shipmentRepository->get($shipmentId);
-        if (count($shippingLabelContent) > 0) {
-            /**
-             * @var LabelGenerator $labelGenerator
-             */
-            $labelGenerator = $this->labelGeneratorFactory->create();
-            $outpuPdf = $labelGenerator->combineLabelsPdf($shippingLabelContent);
-            $shipment->setShippingLabel($outpuPdf->render());
-        }
-        $shipment->setPackages([
-            1 => [
-                'items' => $packageWeight['items'],
-                'params' => [
-                    'weight' => $packageWeight['weight'],
-                    'container' => 1,
-                    'customs_value' => $packageWeight['amount']
-                ]
-            ]]);
-
-        $shipmentRepository->save($shipment);
     }
 
     /**

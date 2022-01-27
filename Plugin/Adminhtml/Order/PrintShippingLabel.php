@@ -43,7 +43,7 @@ class PrintShippingLabel
             $subject->addButton(
                 'printShippingLabel',
                 [
-                    'label' => __('Imprimir guias correo'),
+                    'label' => __('Imprimir rotulo de Correo Argentino'),
                     'onclick' => "setLocation('" . $sendOrder . "')",
                     'class' => 'ship'
                 ]

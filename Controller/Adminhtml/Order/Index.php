@@ -19,7 +19,7 @@ class Index extends Action
         $resultPage = $this->resultFactory->create(ResultFactory::TYPE_PAGE);
 
         $resultPage->setActiveMenu('Tiargsa_CorreoArgentino::shipping_operations')
-            ->getConfig()->getTitle()->prepend(__('Generación Masiva de Guías'));
+            ->getConfig()->getTitle()->prepend(__('Control de transacciones'));
 
         return $resultPage;
     }

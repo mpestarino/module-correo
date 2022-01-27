@@ -119,26 +119,27 @@ class Operations extends Action
         $failureDetail = [];
         foreach ($collection as $order) {
             $shipmentResult = $this->shippingProcessor->generateCorreoShipping($order);
+
             if ($shipmentResult->getStatus()) {
                 $successCount++;
             } else {
                 $failureCount++;
-                $failureDemasitail[] = "Order #" . $order->getIncrementId() . ' - ' . $shipmentResult->getMessage();
+                $failureDetail[] = "Order #" . $order->getIncrementId() . ' - ' . $shipmentResult->getMessage();
             }
         }
 
-        //if ($successCount && !$failureCount) {
+        if ($successCount && !$failureCount) {
             $this->messageManager->addSuccessMessage(__('Todos los pedidos se generaron con exito!'));
-//        } else {
-//            if ($successCount) {
-//                $this->messageManager->addSuccessMessage(
-//                    __($successCount . '/' . $total . ' pedidos se generaron con exito!')
-//                );
-//            }
-//            $this->messageManager->addErrorMessage(
-//                $failureCount . ' pedidos no se generaron con exito. ' . json_encode($failureDetail)
-//            );
-//        }
+        } else {
+            if ($successCount) {
+                $this->messageManager->addSuccessMessage(
+                    __($successCount . '/' . $total . ' pedidos se generaron con exito!')
+                );
+            }
+            $this->messageManager->addErrorMessage(
+                $failureCount . ' pedidos no se generaron con exito. ' . json_encode($failureDetail)
+            );
+        }
         return true;
     }
 

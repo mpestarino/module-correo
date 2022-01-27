@@ -15,7 +15,7 @@
         />
         <add
             id="Tiargsa_CorreoArgentino::guias"
-            title="Generación masiva de ordenes"
+            title="Control de transacciones"
             module="Tiargsa_CorreoArgentino"
             sortOrder="100"
             parent="Tiargsa_CorreoArgentino::menuPrincipal"
