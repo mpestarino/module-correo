@@ -35,19 +35,21 @@ class PrintShippingLabel
     {
         $order = $subject->getOrder();
         if (strpos($order->getShippingMethod(), 'correo') !== false && $this->hasTracking($order)) {
-            $sendOrder = $this->_backendUrl->getUrl(
-                'correo/order/operations/operation/print_shipping_label',
-                ['order_id' => $subject->getOrderId()]
-            );
+            if ($order->getStatusHistoryCollection()->getFirstItem()->getComment() != 'Estado del Envio Cancelado' ) {
+                $sendOrder = $this->_backendUrl->getUrl(
+                    'correo/order/operations/operation/print_shipping_label',
+                    ['order_id' => $subject->getOrderId()]
+                );
 
-            $subject->addButton(
-                'printShippingLabel',
-                [
-                    'label' => __('Imprimir rotulo de Correo Argentino'),
-                    'onclick' => "setLocation('" . $sendOrder . "')",
-                    'class' => 'ship'
-                ]
-            );
+                $subject->addButton(
+                    'printShippingLabel',
+                    [
+                        'label' => __('Imprimir rotulo de Correo Argentino'),
+                        'onclick' => "setLocation('" . $sendOrder . "')",
+                        'class' => 'ship'
+                    ]
+                );
+            }
         }
 
         return null;

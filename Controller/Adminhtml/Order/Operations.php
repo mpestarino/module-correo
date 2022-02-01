@@ -204,6 +204,11 @@ class Operations extends Action
                 }
             }
 
+            if ($base64[0]['fileBase64'] === '') {
+                $this->messageManager->addWarningMessage(
+                    $base64[0]['result']
+                );
+            }
             $pdf_decoded = base64_decode($base64[0]['fileBase64']);
             array_push($labelContent, $pdf_decoded);
             $outputPdf = $this->_labelGeneratorFactory->create()->combineLabelsPdf($labelContent);

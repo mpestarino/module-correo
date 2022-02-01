@@ -6,7 +6,7 @@
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="type" xsi:type="string">order_imprimir_guias_CorreoArgentino</item>
-                        <item name="label" xsi:type="string" translate="true">Imprimir rotulo de Correo Argentino</item>
+<!--                        <item name="label" xsi:type="string" translate="true">Imprimir rotulo de Correo Argentino</item>-->
                         <item name="url" xsi:type="url" path="correo/order/operations">
                             <param name="operation">mass_print_shipping_label</param>
                         </item>

@@ -170,14 +170,14 @@ class ShippingProcessor
     {
         $label = null;
         try {
-            $label = $this->correoApiService->getLabel($tracking);
+            $label = $this->correoApiService->getLabel(11111);
 
         } catch (\Exception $e) {
             $logMessage = "Method: getLabel\n";
             $logMessage .= "Status: with errors\n";
             $logMessage .= "Request: $tracking\n";
             $logMessage .= "Message: " . $e->getMessage() . "\n";
-            Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');
+            Data::log($logMessage, 'correo_errores_rest_' . date('Y_m') . '.log');
         }
         return $label;
     }
@@ -193,7 +193,7 @@ class ShippingProcessor
                 $cancel = true;
             }
             $logMessage = "Method: getCancel\n";
-            $logMessage .= "Status: todo piola \n";
+            $logMessage .= "Status: successful \n";
             $logMessage .= "Request: $tracking\n";
             $logMessage .= "Response: " . $response ."\n";
             Data::log($logMessage, 'correo_rest_' . date('Y_m') . '.log');

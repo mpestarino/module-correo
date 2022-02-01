@@ -34,19 +34,22 @@ class CancelShipping
     public function beforeSetLayout(View $subject)
     {
         $order = $subject->getOrder();
+
         if (strpos($order->getShippingMethod(), 'correo') !== false && $this->hasTracking($order)) {
-            $sendOrder = $this->_backendUrl->getUrl(
-                'correo/order/operations/operation/cancel_shipping',
-                ['order_id' => $subject->getOrderId()]
-            );
-            $subject->addButton(
-                'cancelShipping',
-                [
-                    'label' => __('Cancelar Envio Correo'),
-                    'onclick' => "setLocation('" . $sendOrder . "')",
-                    'class' => 'ship'
-                ]
-            );
+            if ($order->getStatusHistoryCollection()->getFirstItem()->getComment() != 'Estado del Envio Cancelado' ) {
+                $sendOrder = $this->_backendUrl->getUrl(
+                    'correo/order/operations/operation/cancel_shipping',
+                    ['order_id' => $subject->getOrderId()]
+                );
+                $subject->addButton(
+                    'cancelShipping',
+                    [
+                        'label' => __('Cancelar Envio Correo'),
+                        'onclick' => "setLocation('" . $sendOrder . "')",
+                        'class' => 'ship'
+                    ]
+                );
+            }
         }
 
         return null;
