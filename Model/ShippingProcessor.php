@@ -90,9 +90,10 @@ class ShippingProcessor
         $status = false;
         $deliverMethod = $this->getDescriptionByMethod($method);
         $packageWeight = $this->getPackageWeightByItems($items); //pesoTotal, valorDeclarado y volumen
+        $agreement = $this->correoApiService->getUser();
         if (true /*$this->correoHelper->getTipoCotizacion() == $this->correoHelper::COTIZACION_ONLINE*/) {
             $params = [
-                "agreement"=>"",
+                "agreement"=>$agreement['agreement'],
                 "deliveryType"=>"",
                 "parcels"=>[
                     [
@@ -170,7 +171,7 @@ class ShippingProcessor
     {
         $label = null;
         try {
-            $label = $this->correoApiService->getLabel(11111);
+            $label = $this->correoApiService->getLabel($tracking);
 
         } catch (\Exception $e) {
             $logMessage = "Method: getLabel\n";
@@ -271,7 +272,7 @@ class ShippingProcessor
                 $shipmentResult->setStatus(true);
             } else {
                 $orderDate = $order->getCreatedAt();
-                $newDate = strtotime('-3 hour', strtotime($orderDate));
+                $newDate = strtotime($orderDate);
                 $newDate = date('Y-m-j H:i:s', $newDate);
                 //Creo el pedido en correo
                 $params = [

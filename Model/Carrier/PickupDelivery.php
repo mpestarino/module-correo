@@ -30,14 +30,14 @@ class PickupDelivery extends AbstractCarrier implements CarrierInterface
     const METHOD_CODE = 'sucursal';
 
     /**
-     * @var \Magento\Shipping\Model\Tracking\ResultFactory
+     * @var ResultFactory
      */
-    protected \Magento\Shipping\Model\Tracking\ResultFactory $_trackFactory;
+    protected $_trackFactory;
 
     /**
      * @var StatusFactory
      */
-    protected StatusFactory $_trackStatusFactory;
+    protected $_trackStatusFactory;
 
     /**
      * @var string

@@ -63,6 +63,22 @@ class CorreoApiService
         return $response->getReason();
     }
 
+    public function getUser()
+    {
+        if (empty($this->token)) {
+            $this->login();
+        }
+        $user = $this->helper->getUserUrl();
+        return $this->getDataFromResponse($this->doRequest(
+            $user,
+            [
+                'header' => [
+                    'Authorization: Bearer ' . $this->token
+                ]
+            ]
+        ));
+    }
+
     /**
      * @param $tracking
      * @return DataObject

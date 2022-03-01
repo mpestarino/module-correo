@@ -10,8 +10,9 @@ namespace Tiargsa\CorreoArgentino\Helper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\Encryption\EncryptorInterface;
-use Zend\Log\Logger;
-use Zend\Log\Writer\Stream;
+use Zend_Log;
+use Zend_Log_Exception;
+use Zend_Log_Writer_Stream;
 
 class Data extends AbstractHelper
 {
@@ -92,6 +93,13 @@ class Data extends AbstractHelper
         return $this->isProductionMode() ?
             $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_prod_urls/cancel') :
             $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_dev_urls/cancel');
+    }
+
+    public function getUserUrl()
+    {
+        return $this->isProductionMode() ?
+            $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_prod_urls/user') :
+            $this->getConfig(self::SHIPPING_SECTION . 'correo_rest_dev_urls/user');
     }
 
     public function getLocationUrl()
@@ -230,15 +238,15 @@ class Data extends AbstractHelper
         return $this->getConfig("carriers/$type/title");
     }
 
-
     /**
      * @param $mensaje String
      * @param $archivo String
+     * @throws Zend_Log_Exception
      */
     public static function log($mensaje, $archivo)
     {
-        $writer = new Stream(BP . '/var/log/'.$archivo);
-        $logger = new Logger();
+        $writer = new Zend_Log_Writer_Stream(BP . '/var/log/'.$archivo);
+        $logger = new Zend_Log();
         $logger->addWriter($writer);
         $logger->info($mensaje);
     }

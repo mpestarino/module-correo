@@ -1,6 +1,12 @@
 <?php
 namespace Tiargsa\CorreoArgentino\Plugin\Checkout;
 
+use Magento\Checkout\Block\Checkout\LayoutProcessor;
+use Magento\Checkout\Model\Session;
+use Magento\CheckoutAgreements\Model\ResourceModel\Agreement\CollectionFactory;
+use Magento\Customer\Model\AddressFactory;
+use Magento\Framework\View\Element\Template\Context;
+
 class LayoutProcessorPlugin
 {
 
@@ -10,12 +16,12 @@ class LayoutProcessorPlugin
     protected $scopeConfig;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @var Session
      */
     protected $checkoutSession;
 
     /**
-     * @var \Magento\Customer\Model\AddressFactory
+     * @var AddressFactory
      */
     protected $customerAddressFactory;
 
@@ -25,10 +31,10 @@ class LayoutProcessorPlugin
     protected $formKey;
 
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\CheckoutAgreements\Model\ResourceModel\Agreement\CollectionFactory $agreementCollectionFactory,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Customer\Model\AddressFactory $customerAddressFactory
+        Context $context,
+        CollectionFactory $agreementCollectionFactory,
+        Session $checkoutSession,
+        AddressFactory $customerAddressFactory
     ) {
         $this->scopeConfig = $context->getScopeConfig();
         $this->checkoutSession = $checkoutSession;
@@ -36,12 +42,12 @@ class LayoutProcessorPlugin
     }
 
     /**
-     * @param \Magento\Checkout\Block\Checkout\LayoutProcessor $subject
+     * @param LayoutProcessor $subject
      * @param array $jsLayout
      * @return array
      */
     public function afterProcess(
-        \Magento\Checkout\Block\Checkout\LayoutProcessor $subject,
+        LayoutProcessor $subject,
         array  $jsLayout
     ) {
         $attributesConfig = [

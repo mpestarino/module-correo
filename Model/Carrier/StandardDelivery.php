@@ -30,14 +30,14 @@ class StandardDelivery extends AbstractCarrier implements CarrierInterface
     const METHOD_CODE = 'estandar';
 
     /**
-     * @var \Magento\Shipping\Model\Tracking\ResultFactory
+     * @var ResultFactory
      */
-    protected \Magento\Shipping\Model\Tracking\ResultFactory $_trackFactory;
+    protected $_trackFactory;
 
     /**
      * @var StatusFactory
      */
-    protected StatusFactory $_trackStatusFactory;
+    protected $_trackStatusFactory;
 
     /**
      * @var string
@@ -79,16 +79,16 @@ class StandardDelivery extends AbstractCarrier implements CarrierInterface
      * @param array $data
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        ErrorFactory $rateErrorFactory,
-        LoggerInterface $logger,
-        ResultFactory $rateResultFactory,
-        MethodFactory $rateMethodFactory,
+        ScopeConfigInterface                             $scopeConfig,
+        ErrorFactory                                     $rateErrorFactory,
+        LoggerInterface                                  $logger,
+        ResultFactory                                    $rateResultFactory,
+        MethodFactory                                    $rateMethodFactory,
         \Tiargsa\CorreoArgentino\Model\ShippingProcessor $shippingProcessor,
-        \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
-        StatusFactory $trackStatusFactory,
-        Data $correoHelper,
-        array $data = []
+        ResultFactory                                    $trackFactory,
+        StatusFactory                                    $trackStatusFactory,
+        Data                                             $correoHelper,
+        array                                            $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
@@ -149,7 +149,7 @@ class StandardDelivery extends AbstractCarrier implements CarrierInterface
                 ->getRate(
                     $request->getAllItems(),
                     $request->getDestPostcode(),
-                    \Tiargsa\CorreoArgentino\Model\Carrier\StandardDelivery::CARRIER_CODE
+                    StandardDelivery::CARRIER_CODE
                 );
             if ($rate->getStatus()) {
                 $shippingPrice = $rate->getPrice();
