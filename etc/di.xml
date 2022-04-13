@@ -36,4 +36,7 @@
             </argument>
         </arguments>
     </type>
+    <type name="Magento\Config\Model\Config">
+        <plugin name="admin_system_config_save_plugin" type="Tiargsa\CorreoArgentino\Plugin\ConfigPlugin" sortOrder="1"/>
+    </type>
 </config>

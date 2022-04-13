@@ -64,22 +64,26 @@
                 <client_number>CL0003750</client_number>
                 <tracking_url>https://usuarios.e-correo.com/#!/informacionEnvio</tracking_url>
                 <correo_rest_prod_urls>
-                    <login>https://api.correo.com/login</login>
-                    <rates>https://api.correo.com/v1/tarifas</rates>
-                    <createOrder>https://api.correo.com/v2/ordenes-de-envio</createOrder>
-                    <label>https://api.correo.com/v2/ordenes-de-envio/{numerocorreo}/etiquetas</label>
-                    <shippingByNumber>https://api.correo.com/v1/envios/{numerocorreo}</shippingByNumber>
-                    <provinces>https://api.correo.com/v1/regiones</provinces>
-                    <locations>https://api.correo.com/v2/sucursales?canal=B2C&#38;seHaceAtencionAlCliente=true</locations>
+                    <login>https://ptest04.correoargentino.com.ar/apipaqar</login>
+                    <rates>https://ptest04.correoargentino.com.ar/apipaqar/rates</rates>
+                    <createOrder>https://ptest04.correoargentino.com.ar/apipaqar/orders</createOrder>
+                    <label>https://ptest04.correoargentino.com.ar/apipaqar/labels</label>
+                    <shippingByNumber>https://ptest04.correoargentino.com.ar/apipaqar/tracking?extClient=000&amp;trackingNumbers=</shippingByNumber>
+                    <cancel>https://ptest04.correoargentino.com.ar/apipaqar/orders/</cancel>
+                    <locations>https://ptest04.correoargentino.com.ar/apipaqar/agencies</locations>
+                    <correohistory>https://www.correoargentino.com.ar/formularios/e-commerce&amp;id=</correohistory>
+                    <user>https://ptest04.correoargentino.com.ar/apipaqar/user/current</user>
                 </correo_rest_prod_urls>
                 <correo_rest_dev_urls>
-                    <login>https://api.qa.correo.com/login</login>
-                    <rates>https://api.qa.correo.com/v1/tarifas</rates>
-                    <createOrder>https://api.qa.correo.com/v2/ordenes-de-envio</createOrder>
-                    <label>https://api.qa.correo.com/v2/ordenes-de-envio/{numerocorreo}/etiquetas</label>
-                    <shippingByNumber>https://api.qa.correo.com/v1/envios/{numerocorreo}</shippingByNumber>
-                    <provinces>https://api.qa.correo.com/v1/regiones</provinces>
-                    <locations>https://api.qa.correo.com/v2/sucursales?canal=B2C&#38;seHaceAtencionAlCliente=true</locations>
+                    <login>http://192.168.15.158:8080/login</login>
+                    <rates>http://192.168.15.158:8080/rates</rates>
+                    <createOrder>http://192.168.15.158:8080/orders</createOrder>
+                    <label>http://192.168.15.158:8080/labels</label>
+                    <shippingByNumber>http://192.168.15.158:8080tracking?extClient=000&amp;trackingNumbers=</shippingByNumber>
+                    <cancel>http://192.168.15.158:8080/orders/</cancel>
+                    <locations>http://192.168.15.158:8080/agencies</locations>
+                    <correohistory>https://www.correoargentino.com.ar/formularios/e-commerce&amp;id=</correohistory>
+                    <user>http://192.168.15.158:8080/user/current</user>
                 </correo_rest_dev_urls>
             </correo_configuration>
         </shipping>
