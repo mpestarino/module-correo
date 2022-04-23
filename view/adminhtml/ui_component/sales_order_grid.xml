@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
-    <listingToolbar name="listing_top">
-        <massaction name="listing_massaction">
-            <action name="order_imprimir_guias_CorreoArgentino">
-                <argument name="data" xsi:type="array">
-                    <item name="config" xsi:type="array">
-                        <item name="type" xsi:type="string">order_imprimir_guias_CorreoArgentino</item>
-<!--                        <item name="label" xsi:type="string" translate="true">Imprimir rotulo de Correo Argentino</item>-->
-                        <item name="url" xsi:type="url" path="correo/order/operations">
-                            <param name="operation">mass_print_shipping_label</param>
+    <!--
+        <listingToolbar name="listing_top">
+            <massaction name="listing_massaction">
+                <action name="order_imprimir_guias_CorreoArgentino">
+                    <argument name="data" xsi:type="array">
+                        <item name="config" xsi:type="array">
+                            <item name="type" xsi:type="string">order_imprimir_guias_CorreoArgentino</item>
+    &lt;!&ndash;                        <item name="label" xsi:type="string" translate="true">Imprimir rotulo de Correo Argentino</item>&ndash;&gt;
+                            <item name="url" xsi:type="url" path="correo/order/operations">
+                                <param name="operation">mass_print_shipping_label</param>
+                            </item>
                         </item>
-                    </item>
-                </argument>
-            </action>
-        </massaction>
-    </listingToolbar>
+                    </argument>
+                </action>
+            </massaction>
+        </listingToolbar>
+    -->
 </listing>
