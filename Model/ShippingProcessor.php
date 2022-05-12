@@ -119,7 +119,7 @@ class ShippingProcessor
             $paramsObj->setData($params);
             $ratesResult = $this->correoApiService->getRates($paramsObj);
 
-            if ($this->correoHelper->isDebugEnable()) {
+            if ($this->correoHelper->isDebugEnable() && $this->helper->isCotizadorOn()) {
                 $statusMsge = isset($ratesResult["tarifaConIva"]["total"]) ? 'successful' : 'with errors';
                 $logMessage = "Method: getRate for $method\n";
                 $logMessage .= "Status: $statusMsge\n";

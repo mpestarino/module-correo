@@ -43,6 +43,7 @@ class CorreoApiService
     {
         $username = $this->helper->getUsername();
         $password = $this->helper->getPassword();
+
         $response = $this->doRequest($this->helper->getLoginUrl(), [
             'body' => [
                 'user' => $username,
@@ -147,6 +148,10 @@ class CorreoApiService
      */
     public function getRates(DataObject $data)
     {
+        if (!$this->helper->isCotizadorOn())
+        {
+            return null;
+        }
         if (empty($this->token)) {
             $this->login();
         }

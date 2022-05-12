@@ -81,6 +81,12 @@ class Data extends AbstractHelper
         return boolval($this->getConfig(self::SHIPPING_SECTION . 'production_mode'));
     }
 
+    public function isCotizadorOn()
+    {
+        return boolval($this->getConfig(self::SHIPPING_SECTION . 'cotizador'));
+
+    }
+
     public function getLoginUrl()
     {
         return $this->isProductionMode() ?

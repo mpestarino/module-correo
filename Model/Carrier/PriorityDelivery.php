@@ -29,14 +29,14 @@ class PriorityDelivery extends AbstractCarrier implements CarrierInterface
     const METHOD_CODE = 'urgente';
 
     /**
-     * @var ResultFactory
+     * @var \Magento\Shipping\Model\Tracking\ResultFactory
      */
-    protected $_trackFactory;
+    protected \Magento\Shipping\Model\Tracking\ResultFactory $_trackFactory;
 
     /**
      * @var StatusFactory
      */
-    protected $_trackStatusFactory;
+    protected StatusFactory $_trackStatusFactory;
 
     /**
      * @var string

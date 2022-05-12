@@ -30,14 +30,14 @@ class StandardDelivery extends AbstractCarrier implements CarrierInterface
     const METHOD_CODE = 'estandar';
 
     /**
-     * @var ResultFactory
+     * @var \Magento\Shipping\Model\Tracking\ResultFactory
      */
-    protected $_trackFactory;
+    protected \Magento\Shipping\Model\Tracking\ResultFactory $_trackFactory;
 
     /**
      * @var StatusFactory
      */
-    protected $_trackStatusFactory;
+    protected StatusFactory $_trackStatusFactory;
 
     /**
      * @var string
@@ -79,16 +79,16 @@ class StandardDelivery extends AbstractCarrier implements CarrierInterface
      * @param array $data
      */
     public function __construct(
-        ScopeConfigInterface                             $scopeConfig,
-        ErrorFactory                                     $rateErrorFactory,
-        LoggerInterface                                  $logger,
-        ResultFactory                                    $rateResultFactory,
-        MethodFactory                                    $rateMethodFactory,
+        ScopeConfigInterface $scopeConfig,
+        ErrorFactory $rateErrorFactory,
+        LoggerInterface $logger,
+        ResultFactory $rateResultFactory,
+        MethodFactory $rateMethodFactory,
         \Tiargsa\CorreoArgentino\Model\ShippingProcessor $shippingProcessor,
-        ResultFactory                                    $trackFactory,
-        StatusFactory                                    $trackStatusFactory,
-        Data                                             $correoHelper,
-        array                                            $data = []
+        \Magento\Shipping\Model\Tracking\ResultFactory $trackFactory,
+        StatusFactory $trackStatusFactory,
+        Data $correoHelper,
+        array $data = []
     ) {
         $this->_rateResultFactory = $rateResultFactory;
         $this->_rateMethodFactory = $rateMethodFactory;
